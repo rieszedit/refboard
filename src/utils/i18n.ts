@@ -1,0 +1,95 @@
+export const translations = {
+    en: {
+        welcome: "WELCOME TO REFBOARD",
+        selectAesthetic: "Select your workspace aesthetic and language to begin.",
+        getStarted: "GET STARTED",
+        active: "ACTIVE",
+        finished: "FINISHED",
+        placeholder: "ENTER PROJECT TITLE...",
+        connected: "Connected",
+        localOnly: "Local only",
+        settings: "SETTINGS",
+        webhookUrl: "Discord Webhook URL",
+        alertDays: "Discord Alert Days",
+        inAppAlertWeeks: "In-App Alert Priority",
+        inAppAlertDays: "In-App Alert Days",
+        theme: "THEME",
+        language: "LANGUAGE",
+        done: "DONE",
+        deleteConfirm: "Do you want to delete this job?",
+        noFile: "No file linked",
+        refBoard: "Reference Board",
+        openProject: "Open Project",
+        delete: "Delete",
+        today: "Today",
+        daysAgo: " days left",
+        expired: "Expired",
+        remaining: "Remain ",
+        days: " days",
+        day: " day",
+        currentRemainingTime: "Remaining",
+        failedToOpenFile: "Failed to open file: ",
+        referenceBoard: "Reference Board",
+        notSet: "Not Set",
+        todayDelivery: "Delivery Today",
+        jobCompletedMessage: "✅ Project \"{title}\" has been completed!",
+        version: "RefBoard v0.1.0",
+        helpUndoRedo: "Undo/Redo: Ctrl+Z/Y",
+        helpCopyPaste: "Copy/Paste: Ctrl+C/V",
+        helpPan: "Pan: Middle Click / Shift+Drag",
+        helpZoom: "Zoom: Scroll"
+    },
+    ja: {
+        welcome: "RefBoard へようこそ",
+        selectAesthetic: "作業環境に合わせてテーマと言語を選択してください。",
+        getStarted: "はじめる",
+        active: "進行中",
+        finished: "完了済み",
+        placeholder: "プロジェクトタイトルを入力...",
+        connected: "接続済み",
+        localOnly: "ローカルのみ",
+        settings: "設定",
+        webhookUrl: "Discord Webhook URL",
+        alertDays: "Discord 通知タイミング",
+        inAppAlertWeeks: "アプリ内アラート優先度",
+        inAppAlertDays: "アプリ内アラート日数",
+        theme: "テーマ",
+        language: "言語",
+        done: "完了",
+        deleteConfirm: "この案件を削除しますか？",
+        noFile: "ファイル未設定",
+        refBoard: "リファレンスボード",
+        openProject: "プロジェクトを開く",
+        delete: "削除",
+        today: "本日",
+        daysAgo: "日前",
+        expired: "期限切れ",
+        remaining: "あと ",
+        days: "日",
+        day: "日",
+        currentRemainingTime: "残り時間",
+        failedToOpenFile: "ファイルを開けませんでした: ",
+        referenceBoard: "リファレンスボード",
+        notSet: "未設定",
+        todayDelivery: "本日納品",
+        jobCompletedMessage: "✅ 案件「{title}」が完了しました！",
+        version: "RefBoard v0.1.0",
+        helpUndoRedo: "元に戻す/やり直し: Ctrl+Z/Y",
+        helpCopyPaste: "コピー/貼り付け: Ctrl+C/V",
+        helpPan: "パン: 中クリック / Shift+ドラッグ",
+        helpZoom: "ズーム: スクロール"
+    }
+};
+
+export type Language = keyof typeof translations;
+export type TranslationKeys = keyof typeof translations['en'];
+
+export const t = (lang: Language, key: TranslationKeys, params?: Record<string, string>) => {
+    let text = translations[lang][key] || key;
+    if (params) {
+        Object.entries(params).forEach(([k, v]) => {
+            text = text.replace(`{${k}}`, v);
+        });
+    }
+    return text;
+};
