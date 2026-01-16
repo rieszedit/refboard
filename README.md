@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # RefBoard
 
 [English](#english) | [日本語](#日本語)
@@ -49,3 +50,7 @@ Go to the `src-tauri/target/release/bundle/msi` or `src-tauri/target/release` fo
 
 ### インストール
 ビルド後、`src-tauri/target/release/bundle/msi` または `src-tauri/target/release` フォルダ内に `RefBoard.exe` が生成されます。
+=======
+# refboard
+RefBoard is a minimalist, professional reference management tool designed for creators.
+>>>>>>> 8163f97ca53873b42d6adafcf598940c46a3bb98
