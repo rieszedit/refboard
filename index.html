@@ -1,104 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="ja">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RefBoard | Minimalist Reference Manager for Creators</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RefBoard Pro</title>
 </head>
+
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <img src="https://api.dicebear.com/7.x/initials/svg?seed=RB&backgroundColor=000000" alt="RefBoard Logo">
-                <span>RefBoard</span>
-            </div>
-            <div class="nav-links">
-                <a href="#features">Features</a>
-                <a href="https://github.com/rieszedit/refboard" target="_blank">GitHub</a>
-                <a href="#download" class="btn-primary">Download</a>
-            </div>
-        </nav>
-    </header>
-
-    <main>
-        <section class="hero">
-            <div class="hero-content">
-                <h1 class="fade-in">Spatial thinking for creators.</h1>
-                <p class="fade-in-delayed">RefBoard is a minimalist, professional reference management tool. Organize your inspiration, track deadlines, and focus on what matters most.</p>
-                <div class="hero-btns fade-in-delayed">
-                    <a href="#download" class="btn-lg">Get RefBoard Pro</a>
-                    <a href="#features" class="btn-outline">Learn More</a>
-                </div>
-            </div>
-            <div class="hero-preview reflect-glass">
-                <div class="video-container">
-                    <iframe 
-                        src="https://www.youtube.com/embed/jZQQk33gd8k" 
-                        title="RefBoard Demo" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                        referrerpolicy="strict-origin-when-cross-origin" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
-            </div>
-        </section>
-
-        <section id="features" class="features">
-            <h2 class="section-title">Designed for focus.</h2>
-            <div class="feature-grid">
-                <div class="feature-card glass">
-                    <i data-lucide="layout"></i>
-                    <h3>Minimalist Dashboard</h3>
-                    <p>Clean luxury aesthetic designed to stay out of your way while you work.</p>
-                </div>
-                <div class="feature-card glass">
-                    <i data-lucide="maximize"></i>
-                    <h3>Infinite Canvas</h3>
-                    <p>Independent reference board with 8-handle resizing and aspect ratio lock.</p>
-                </div>
-                <div class="feature-card glass">
-                    <i data-lucide="bell"></i>
-                    <h3>Smart Reminders</h3>
-                    <p>Discord and in-app notifications to keep your project deadlines on track.</p>
-                </div>
-                <div class="feature-card glass">
-                    <i data-lucide="languages"></i>
-                    <h3>Bilingual</h3>
-                    <p>Full support for English and Japanese interfaces from the first launch.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="download" class="cta glass">
-            <h2>Ready to elevate your workflow?</h2>
-            <p>Download RefBoard Pro for Windows and start organizing your creative projects today.</p>
-            <div class="download-container">
-                <a href="https://github.com/rieszedit/refboard/releases/latest" class="btn-lg btn-accent" target="_blank">
-                    <i data-lucide="download"></i> Download for Windows
-                </a>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-info">
-                <p>&copy; 2026 RefBoard. Built with Tauri & React.</p>
-            </div>
-            <div class="footer-links">
-                <a href="https://github.com/rieszedit/refboard" target="_blank">View on GitHub</a>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        lucide.createIcons();
-    </script>
+    <div id="root"></div>
+    <div id="portal-root"></div>
+    <script type="module" src="/src/main.tsx"></script>
 </body>
+
 </html>

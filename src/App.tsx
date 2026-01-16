@@ -462,6 +462,7 @@ function App() {
             {/* タイトルバー */}
             <div data-tauri-drag-region className="titlebar">
                 <div className="drag-handle" data-tauri-drag-region>
+                    <img src="/logo.png" style={{ width: 14, height: 14, marginRight: 8, pointerEvents: 'none' }} alt="" />
                     <span className="app-title" data-tauri-drag-region>REFBOARD</span>
                     <span className="app-subtitle" data-tauri-drag-region>Dashboard</span>
                 </div>
