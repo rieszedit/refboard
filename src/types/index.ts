@@ -33,6 +33,8 @@ export interface AppSettings {
     inAppAlertDays: number[];    // アプリ内通知する日数リスト
     hasCompletedOnboarding?: boolean;
     language: "en" | "ja";
+    notificationHour: number;    // 通知時刻（時）0-23
+    notificationMinute: number;  // 通知時刻（分）0-59
 }
 
 // 保存データ構造

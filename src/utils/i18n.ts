@@ -37,7 +37,19 @@ export const translations = {
         helpUndoRedo: "Undo/Redo: Ctrl+Z/Y",
         helpCopyPaste: "Copy/Paste: Ctrl+C/V",
         helpPan: "Pan: Middle Click / Shift+Drag",
-        helpZoom: "Zoom: Scroll"
+        helpZoom: "Zoom: Scroll",
+        notificationTime: "Notification Time",
+        // Discord Embed
+        discordStatus: "Status",
+        discordDeadline: "Deadline",
+        discordRemaining: "Remaining",
+        discordExpired: "EXPIRED",
+        discordDueToday: "DUE TODAY",
+        discordDueTomorrow: "Due Tomorrow",
+        discordDueInDays: "Due in {days} days",
+        discordOverdue: "Overdue",
+        discordToday: "Today",
+        discordDaysRemaining: "{days} day{plural}"
     },
     ja: {
         welcome: "RefBoard へようこそ",
@@ -77,7 +89,19 @@ export const translations = {
         helpUndoRedo: "元に戻す/やり直し: Ctrl+Z/Y",
         helpCopyPaste: "コピー/貼り付け: Ctrl+C/V",
         helpPan: "パン: 中クリック / Shift+ドラッグ",
-        helpZoom: "ズーム: スクロール"
+        helpZoom: "ズーム: スクロール",
+        notificationTime: "通知時刻",
+        // Discord Embed
+        discordStatus: "ステータス",
+        discordDeadline: "締切",
+        discordRemaining: "残り時間",
+        discordExpired: "期限切れ",
+        discordDueToday: "本日納品",
+        discordDueTomorrow: "明日納品",
+        discordDueInDays: "あと{days}日",
+        discordOverdue: "期限超過",
+        discordToday: "本日",
+        discordDaysRemaining: "残り{days}日"
     }
 };
 

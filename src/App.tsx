@@ -20,6 +20,8 @@ function App() {
         discordAlertDays: [1, 0],
         inAppAlertDays: [1, 0],
         language: "en",
+        notificationHour: 9,
+        notificationMinute: 0,
     });
     const [showSettings, setShowSettings] = useState(false);
     const [pinned, setPinned] = useState(false);
@@ -118,6 +120,11 @@ function App() {
 
         const checkDeadlines = async () => {
             const now = new Date();
+            if (import.meta.env.DEV) {
+                console.log(`[Notification Check] ${now.toLocaleTimeString()} - Checking ${jobs.length} jobs`);
+                console.log(`[Settings] Notification time: ${settings.notificationHour.toString().padStart(2, '0')}:${settings.notificationMinute.toString().padStart(2, '0')}`);
+            }
+
             let hasChanges = false;
             const updatedJobs = JSON.parse(JSON.stringify(jobs)) as Job[];
 
@@ -128,19 +135,42 @@ function App() {
                 const diffMs = deadline.getTime() - now.getTime();
                 const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
+                if (import.meta.env.DEV) {
+                    console.log(`[Job: ${job.title}] Deadline: ${deadline.toLocaleString()}, Days remaining: ${diffDays}`);
+                }
+
                 for (const daysBefore of settings.discordAlertDays) {
                     const ruleKey = `day-${daysBefore}`;
-                    if (job.completedRules.includes(ruleKey)) continue;
+                    if (job.completedRules.includes(ruleKey)) {
+                        if (import.meta.env.DEV) {
+                            console.log(`  [Discord] ${daysBefore}d rule already completed`);
+                        }
+                        continue;
+                    }
 
                     // 指定日の0時、または当日(0)なら現在との差分で判定
-                    const isDue = diffDays <= daysBefore;
+                    // 通知時刻チェック: 設定時刻以降のみ通知
+                    const currentHour = now.getHours();
+                    const currentMinute = now.getMinutes();
+                    const isTimeToNotify =
+                        currentHour > settings.notificationHour ||
+                        (currentHour === settings.notificationHour && currentMinute >= settings.notificationMinute);
+
+                    if (import.meta.env.DEV) {
+                        console.log(`  [Discord] ${daysBefore}d check - diffDays: ${diffDays}, isTimeToNotify: ${isTimeToNotify} (${currentHour}:${currentMinute})`);
+                    }
+
+                    const isDue = diffDays <= daysBefore && isTimeToNotify;
                     if (isDue) {
+                        if (import.meta.env.DEV) {
+                            console.log(`  ✅ [Discord] Sending notification for ${daysBefore}d rule`);
+                        }
                         const timeText = daysBefore === 0 ? t(settings.language, "today") : `${daysBefore}${t(settings.language, "daysAgo")}`;
                         const remainingText = diffDays < 0 ? t(settings.language, "expired") : (diffDays === 0 ? t(settings.language, "today") : `${t(settings.language, "remaining")}${diffDays}${t(settings.language, "days")}`);
 
                         const msg = `🔔 【${job.title}】 ${timeText}。\n(${t(settings.language, "currentRemainingTime")}: ${remainingText})`;
 
-                        await sendToDiscord(msg);
+                        await sendToDiscord(msg, job.title, job.deadline, diffDays, settings.language);
 
                         // ローカル通知
                         let permissionGranted = await isPermissionGranted();
@@ -160,9 +190,28 @@ function App() {
                 // App Alert check
                 for (const daysBefore of settings.inAppAlertDays) {
                     const ruleKey = `app-day-${daysBefore}`;
-                    if (job.completedRules.includes(ruleKey)) continue;
+                    if (job.completedRules.includes(ruleKey)) {
+                        if (import.meta.env.DEV) {
+                            console.log(`  [In-App] ${daysBefore}d rule already completed`);
+                        }
+                        continue;
+                    }
 
-                    if (diffDays <= daysBefore) {
+                    // 通知時刻チェック
+                    const currentHour = now.getHours();
+                    const currentMinute = now.getMinutes();
+                    const isTimeToNotify =
+                        currentHour > settings.notificationHour ||
+                        (currentHour === settings.notificationHour && currentMinute >= settings.notificationMinute);
+
+                    if (import.meta.env.DEV) {
+                        console.log(`  [In-App] ${daysBefore}d check - diffDays: ${diffDays}, isTimeToNotify: ${isTimeToNotify}`);
+                    }
+
+                    if (diffDays <= daysBefore && isTimeToNotify) {
+                        if (import.meta.env.DEV) {
+                            console.log(`  ✅ [In-App] Showing alert for ${daysBefore}d rule`);
+                        }
                         const timeText = daysBefore === 0 ? t(settings.language, "today") : `${daysBefore}${t(settings.language, "daysAgo")}`;
                         const remainingText = diffDays < 0 ? t(settings.language, "expired") : (diffDays === 0 ? t(settings.language, "today") : `${t(settings.language, "remaining")}${diffDays}${t(settings.language, "days")}`);
                         const msg = `🔔 【${job.title}】 ${timeText}。\n(${t(settings.language, "currentRemainingTime")}: ${remainingText})`;
@@ -448,11 +497,40 @@ function App() {
                             className="language-dropdown"
                             value={settings.language}
                             onChange={(e) => setSettings({ ...settings, language: e.target.value as 'en' | 'ja' })}
-                            style={{ marginBottom: '32px' }}
+                            style={{ marginBottom: '20px' }}
                         >
                             <option value="en">English</option>
                             <option value="ja">日本語</option>
                         </select>
+
+                        <div style={{ margin: '0 0 10px', fontSize: '12px', color: 'var(--text-sub)' }}>{t(settings.language, "notificationTime")}</div>
+                        <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
+                            <select
+                                className="language-dropdown"
+                                value={settings.notificationHour}
+                                onChange={(e) => setSettings({ ...settings, notificationHour: parseInt(e.target.value) })}
+                                style={{ flex: 1 }}
+                            >
+                                {Array.from({ length: 24 }, (_, i) => (
+                                    <option key={i} value={i}>
+                                        {i.toString().padStart(2, '0')}
+                                    </option>
+                                ))}
+                            </select>
+                            <span style={{ alignSelf: 'center', color: 'var(--text-sub)' }}>:</span>
+                            <select
+                                className="language-dropdown"
+                                value={settings.notificationMinute}
+                                onChange={(e) => setSettings({ ...settings, notificationMinute: parseInt(e.target.value) })}
+                                style={{ flex: 1 }}
+                            >
+                                {Array.from({ length: 60 }, (_, i) => (
+                                    <option key={i} value={i}>
+                                        {i.toString().padStart(2, '0')}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
 
                         <button className="btn-close-settings" onClick={() => setShowSettings(false)}>
                             {t(settings.language, "done")}
