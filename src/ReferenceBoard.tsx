@@ -98,7 +98,7 @@ export default function ReferenceBoard() {
         }
     }, [jobData.id]);
 
-    // Theme Sync
+    // Theme & Context Menu Sync
     useEffect(() => {
         const unlistenTheme = listen<{ theme: "light" | "dark" }>("theme-changed", (event) => {
             setTheme(event.payload.theme);
@@ -106,9 +106,17 @@ export default function ReferenceBoard() {
         const unlistenLanguage = listen<{ language: "en" | "ja" }>("language-changed", (event) => {
             setLanguage(event.payload.language);
         });
+
+        // 無駄なコンテキストメニューを無効化
+        const handleContextMenu = (e: MouseEvent) => {
+            e.preventDefault();
+        };
+        document.addEventListener("contextmenu", handleContextMenu);
+
         return () => {
             unlistenTheme.then(f => f());
             unlistenLanguage.then(f => f());
+            document.removeEventListener("contextmenu", handleContextMenu);
         };
     }, []);
 

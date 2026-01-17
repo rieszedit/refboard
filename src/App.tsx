@@ -55,6 +55,15 @@ function App() {
     // 初期化
     useEffect(() => {
         loadData();
+
+        // 無駄なコンテキストメニューを無効化
+        const handleContextMenu = (e: MouseEvent) => {
+            e.preventDefault();
+        };
+        document.addEventListener("contextmenu", handleContextMenu);
+        return () => {
+            document.removeEventListener("contextmenu", handleContextMenu);
+        };
     }, [loadData]);
 
     // 自動保存
@@ -421,36 +430,29 @@ function App() {
                         </div>
 
                         <div style={{ margin: '20px 0 10px', fontSize: '12px', color: 'var(--text-sub)' }}>{t(settings.language, "theme")}</div>
-                        <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-                            <button
-                                className={`theme-btn ${settings.isDark ? 'active' : ''}`}
-                                onClick={() => setSettings({ ...settings, isDark: true })}
-                            >
-                                DARK
-                            </button>
-                            <button
-                                className={`theme-btn ${!settings.isDark ? 'active' : ''}`}
-                                onClick={() => setSettings({ ...settings, isDark: false })}
-                            >
-                                LIGHT
-                            </button>
+                        <div className="toggle-switch-container" style={{ marginBottom: '20px' }}>
+                            <span style={{ fontSize: '11px', color: 'var(--text-sub)', marginRight: '10px' }}>LIGHT</span>
+                            <label className="toggle-switch">
+                                <input
+                                    type="checkbox"
+                                    checked={settings.isDark}
+                                    onChange={(e) => setSettings({ ...settings, isDark: e.target.checked })}
+                                />
+                                <span className="toggle-slider"></span>
+                            </label>
+                            <span style={{ fontSize: '11px', color: 'var(--text-sub)', marginLeft: '10px' }}>DARK</span>
                         </div>
 
                         <div style={{ margin: '0 0 10px', fontSize: '12px', color: 'var(--text-sub)' }}>{t(settings.language, "language")}</div>
-                        <div style={{ display: 'flex', gap: '8px', marginBottom: '32px' }}>
-                            <button
-                                className={`theme-btn ${settings.language === 'en' ? 'active' : ''}`}
-                                onClick={() => setSettings({ ...settings, language: 'en' })}
-                            >
-                                ENGLISH
-                            </button>
-                            <button
-                                className={`theme-btn ${settings.language === 'ja' ? 'active' : ''}`}
-                                onClick={() => setSettings({ ...settings, language: 'ja' })}
-                            >
-                                日本語
-                            </button>
-                        </div>
+                        <select
+                            className="language-dropdown"
+                            value={settings.language}
+                            onChange={(e) => setSettings({ ...settings, language: e.target.value as 'en' | 'ja' })}
+                            style={{ marginBottom: '32px' }}
+                        >
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                        </select>
 
                         <button className="btn-close-settings" onClick={() => setShowSettings(false)}>
                             {t(settings.language, "done")}
@@ -474,6 +476,7 @@ function App() {
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 14, height: 14 }}><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     </button>
                     <button className="btn" onClick={minimizeWindow}>－</button>
+                    <button className="btn" onClick={() => appWindow.toggleMaximize()}>□</button>
                     <button className="btn close-btn" onClick={closeWindow}>✕</button>
                 </div>
             </div>
@@ -557,6 +560,7 @@ function App() {
                                                 timeFormat="HH:mm"
                                                 dateFormat="MMM d, h:mm aa"
                                                 portalId="root"
+                                                popperPlacement="bottom-end"
                                                 customInput={
                                                     <span className="deadline-badge" style={{ color: deadlineInfo.color }}>
                                                         {deadlineInfo.text}

@@ -636,7 +636,7 @@ body {
 
 .react-datepicker__day--selected {
     background-color: var(--accent) !important;
-    color: white !important;
+    color: var(--bg-primary) !important;
 }
 
 .react-datepicker__day--disabled {
@@ -694,4 +694,141 @@ body {
         opacity: 1;
         transform: translateX(0);
     }
+}
+
+/* --- Toggle Switch --- */
+.toggle-switch-container {
+    display: flex;
+    align-items: center;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border);
+    transition: 0.3s;
+    border-radius: 20px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-sub);
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked+.toggle-slider {
+    background-color: var(--accent);
+}
+
+input:checked+.toggle-slider:before {
+    transform: translateX(20px);
+    background-color: var(--bg-primary);
+}
+
+/* --- Language Dropdown --- */
+.language-dropdown {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 12px;
+    background: var(--bg-secondary);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.language-dropdown:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.language-dropdown option {
+    background: var(--bg-primary);
+    color: var(--text-main);
+}
+
+/* --- Day Chips --- */
+.day-chip {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.day-chip:hover {
+    border-color: var(--accent);
+    color: var(--text-main);
+}
+
+.day-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-primary);
+    font-weight: 600;
+}
+
+/* --- React DatePicker Customizations --- */
+.react-datepicker-popper {
+    z-index: 10001 !important;
+}
+
+/* Shift DatePicker left if it would overflow */
+.react-datepicker-popper[data-placement^="bottom"] {
+    margin-top: 10px !important;
+}
+
+.react-datepicker__time-list-item {
+    color: var(--text-main) !important;
+    background: transparent !important;
+}
+
+.react-datepicker__time-list-item--selected {
+    background-color: var(--accent) !important;
+    color: var(--bg-primary) !important;
+}
+
+.react-datepicker__time-list-item:hover {
+    background-color: var(--accent-dim) !important;
+}
+
+/* Ensure time list is readable in dark theme */
+[data-theme="dark"] .react-datepicker__time-list-item {
+    color: #f0f0f0 !important;
+}
+
+[data-theme="dark"] .react-datepicker__time-list-item--selected {
+    color: #1a1a1a !important;
 }
