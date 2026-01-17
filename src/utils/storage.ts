@@ -11,6 +11,8 @@ const DEFAULT_SETTINGS: AppSettings = {
     discordAlertDays: [1, 0],
     inAppAlertDays: [1, 0],
     language: "en",
+    notificationHour: 9,
+    notificationMinute: 0,
 };
 
 // データディレクトリを確保
