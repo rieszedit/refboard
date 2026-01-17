@@ -10,7 +10,8 @@
     --danger: #ff4d4d;
 }
 
-[data-theme="light"] {
+[data-theme="light"],
+.light-theme {
     --bg-primary: #ffffff;
     --bg-secondary: #f4f4f4;
     --accent: #111111;
@@ -252,6 +253,18 @@ body {
     background: var(--text-main);
     border-radius: 2px;
     animation: check-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.datepicker-input {
+    width: 160px;
+    padding: 10px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-main);
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
 }
 
 .board-trigger {
@@ -605,11 +618,15 @@ body {
 
 /* --- React DatePicker Base Overrides --- */
 .react-datepicker-wrapper {
-    display: inline-block;
+    display: block !important;
 }
 
 .react-datepicker__input-container input {
     display: none;
+}
+
+.react-datepicker__input-container input.datepicker-input {
+    display: block !important;
 }
 
 .react-datepicker {
@@ -825,10 +842,13 @@ input:checked+.toggle-slider:before {
 }
 
 /* Ensure time list is readable in dark theme */
-[data-theme="dark"] .react-datepicker__time-list-item {
+/* Ensure time list is readable in dark theme */
+[data-theme="dark"] .react-datepicker__time-list-item,
+.dark-theme .react-datepicker__time-list-item {
     color: #f0f0f0 !important;
 }
 
-[data-theme="dark"] .react-datepicker__time-list-item--selected {
+[data-theme="dark"] .react-datepicker__time-list-item--selected,
+.dark-theme .react-datepicker__time-list-item--selected {
     color: #1a1a1a !important;
 }

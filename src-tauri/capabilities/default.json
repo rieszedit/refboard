@@ -4,7 +4,8 @@
     "description": "Default capabilities for RefBoard Pro",
     "windows": [
         "main",
-        "ref-board-*"
+        "ref-board-*",
+        "invoice-*"
     ],
     "permissions": [
         "core:default",

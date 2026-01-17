@@ -10,7 +10,8 @@
     --titlebar-bg: rgba(26, 26, 26, 0.9);
 }
 
-[data-theme="light"] {
+[data-theme="light"],
+.light-theme {
     /* BeeRef Minimalist Palette (Light) */
     --bg-color: #ffffff;
     --grid-color: #e5e5e5;

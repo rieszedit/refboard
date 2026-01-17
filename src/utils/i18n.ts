@@ -82,7 +82,19 @@ export const translations = {
         hasInvoiceRegistration: "Has Invoice Registration Number",
         invoiceRegistrationNumber: "Registration Number (T + 13 digits)",
         invoicePrefix: "Invoice Number Prefix",
-        downloadPDF: "Download PDF"
+        nextInvoiceNumber: "Next Invoice Number",
+        downloadPDF: "Download PDF",
+        cancel: "Cancel",
+        save: "Save",
+        summary: "Summary",
+        subtotal: "Subtotal",
+        taxLabel: "Tax (10%)",
+        withholdingLabel: "Withholding (10.21%)",
+        total: "Total",
+        generating: "Generating...",
+        phone: "Phone",
+        bankInfo: "Banking Information",
+        invoiceDefaults: "Invoice Defaults"
     },
     ja: {
         welcome: "RefBoard へようこそ",
@@ -167,7 +179,19 @@ export const translations = {
         hasInvoiceRegistration: "インボイス登録番号あり",
         invoiceRegistrationNumber: "登録番号 (T + 13桁)",
         invoicePrefix: "請求書番号プレフィックス",
-        downloadPDF: "PDFをダウンロード"
+        nextInvoiceNumber: "次の請求書番号",
+        downloadPDF: "PDFをダウンロード",
+        cancel: "キャンセル",
+        save: "保存",
+        summary: "計算結果",
+        subtotal: "小計",
+        taxLabel: "消費税 (10%)",
+        withholdingLabel: "源泉徴収 (10.21%)",
+        total: "合計",
+        generating: "生成中...",
+        phone: "電話番号",
+        bankInfo: "振込先情報",
+        invoiceDefaults: "請求書設定"
     }
 };
 

@@ -11,6 +11,12 @@ import type { Job, AppSettings, RequestReferenceDataPayload, UpdateReferenceData
 import { loadAppData, saveAppData } from "./utils/storage";
 import { useDiscord } from "./hooks/useDiscord";
 import { t } from "./utils/i18n";
+import { InvoiceGenerationModal } from "./components/InvoiceGenerationModal";
+import type { InvoiceSettings } from "./types/invoice";
+import { registerLocale } from "react-datepicker";
+import { ja } from "date-fns/locale";
+
+registerLocale('ja', ja);
 
 function App() {
     const [jobs, setJobs] = useState<Job[]>([]);
@@ -24,6 +30,8 @@ function App() {
         notificationMinute: 0,
     });
     const [showSettings, setShowSettings] = useState(false);
+    const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+    const [selectedJobForInvoice, setSelectedJobForInvoice] = useState<Job | null>(null);
     const [pinned, setPinned] = useState(false);
     const [filter, setFilter] = useState<"active" | "completed">("active");
     const [alertQueue, setAlertQueue] = useState<string[]>([]);
@@ -104,15 +112,69 @@ function App() {
                 const updatedJob = event.payload.job;
                 setJobs((prev) => prev.map((j) => (j.id === updatedJob.id ? updatedJob : j)));
             });
+
+            // 請求書ウィンドウからの設定リクエスト
+            await listen<{ jobId: string }>("invoice-request-settings", () => {
+                if (settings.invoice) {
+                    emit("invoice-settings-data", { settings: settings.invoice });
+                }
+            });
+
+            // 請求書生成完了
+            const unlistenInvoiceGenerated = await listen<{ jobId: string; invoiceNumber: string; invoiceDate: string; nextNumber: number }>("invoice-generated", (event) => {
+                const { jobId, invoiceNumber, invoiceDate, nextNumber } = event.payload;
+                // Update job with invoice info
+                setJobs((prev) => prev.map((j) =>
+                    j.id === jobId ? { ...j, invoiceGenerated: true, invoiceNumber, invoiceDate } : j
+                ));
+                // Update next invoice number
+                if (settings.invoice) {
+                    setSettings((prev) => ({
+                        ...prev,
+                        invoice: { ...prev.invoice!, nextInvoiceNumber: nextNumber }
+                    }));
+                }
+            });
+
+            return () => {
+                unlistenInvoiceGenerated();
+            };
+        };
+
+        const setupInvoiceSettingsListeners = async () => {
+            // 請求書設定リクエスト
+            await listen("invoice-settings-request-data", () => {
+                const defaultInvoiceSettings: InvoiceSettings = {
+                    businessName: '',
+                    postalCode: '',
+                    phone: '',
+                    address: '',
+                    bankName: '',
+                    branchName: '',
+                    accountType: 'savings',
+                    accountNumber: '',
+                    accountHolder: '',
+                    invoicePrefix: 'INV-',
+                    nextInvoiceNumber: 1,
+                    hasInvoiceRegistration: false
+                };
+                emit("invoice-settings-data", { settings: settings.invoice || defaultInvoiceSettings });
+            });
+
+            // 請求書設定保存
+            await listen<InvoiceSettings>("invoice-settings-save", (event) => {
+                setSettings((prev) => ({ ...prev, invoice: event.payload }));
+            });
         };
 
         setupListeners();
+        setupInvoiceSettingsListeners();
 
         return () => {
             if (unlistenRequest) unlistenRequest();
             if (unlistenUpdate) unlistenUpdate();
         };
-    }, [jobs]);
+    }, [jobs, settings]);
 
     // 通知チェック
     useEffect(() => {
@@ -380,6 +442,23 @@ function App() {
 
     const minimizeWindow = () => appWindow.minimize();
 
+    const openInvoiceSettingsWindow = async () => {
+        const label = 'invoice-settings';
+        const existing = await WebviewWindow.getByLabel(label);
+        if (existing) {
+            await existing.setFocus();
+        } else {
+            new WebviewWindow(label, {
+                url: `/?window=invoice-settings&theme=${settings.isDark ? 'dark' : 'light'}&lang=${settings.language}`,
+                title: t(settings.language, "invoiceSettings"),
+                width: 500,
+                height: 800,
+                decorations: false,
+                transparent: true,
+            });
+        }
+    };
+
     return (
         <div className="app-container">
             {/* オンボーディング */}
@@ -503,7 +582,7 @@ function App() {
                             <option value="ja">日本語</option>
                         </select>
 
-                        <div style={{ margin: '0 0 10px', fontSize: '12px', color: 'var(--text-sub)' }}>{t(settings.language, "notificationTime")}</div>
+                        <div style={{ margin: '0 0 10px', fontSize: '12px', color: 'var(--text-primary)' }}>{t(settings.language, "notificationTime")}</div>
                         <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
                             <select
                                 className="language-dropdown"
@@ -531,6 +610,18 @@ function App() {
                                 ))}
                             </select>
                         </div>
+
+                        <div style={{ margin: '20px 0 10px', fontSize: '12px', color: 'var(--text-sub)' }}>{t(settings.language, "invoiceSettings")}</div>
+                        <button
+                            className="btn-secondary"
+                            onClick={() => {
+                                setShowSettings(false);
+                                openInvoiceSettingsWindow();
+                            }}
+                            style={{ width: '100%', marginBottom: '20px' }}
+                        >
+                            {t(settings.language, "configureInvoice")}
+                        </button>
 
                         <button className="btn-close-settings" onClick={() => setShowSettings(false)}>
                             {t(settings.language, "done")}
@@ -609,6 +700,42 @@ function App() {
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 18, height: 18 }}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
                                     </div>
 
+                                    {/* Invoice Button */}
+                                    <div
+                                        className="board-trigger"
+                                        onClick={async () => {
+                                            if (settings.invoice) {
+                                                const label = `invoice-${job.id}`;
+                                                const existing = await WebviewWindow.getByLabel(label);
+                                                if (existing) {
+                                                    await existing.setFocus();
+                                                } else {
+                                                    new WebviewWindow(label, {
+                                                        url: `/?window=invoice&id=${job.id}&title=${encodeURIComponent(job.title)}&theme=${settings.isDark ? 'dark' : 'light'}&lang=${settings.language}`,
+                                                        title: `${t(settings.language, "generateInvoice")} - ${job.title}`,
+                                                        width: 480,
+                                                        height: 850,
+                                                        decorations: false,
+                                                        transparent: true,
+                                                    });
+                                                }
+                                            } else {
+                                                openInvoiceSettingsWindow();
+                                            }
+                                        }}
+                                        title={t(settings.language, "generateInvoice")}
+                                        style={{ marginLeft: '4px' }}
+                                    >
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 18, height: 18 }}>
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
+                                        </svg>
+                                    </div>
+
+
                                     {/* メイン情報 */}
                                     <div className="job-main">
                                         <div className="job-title">
@@ -635,6 +762,7 @@ function App() {
                                                 selected={job.deadline ? new Date(job.deadline) : null}
                                                 onChange={(date: Date | null) => updateJob(job.id, { deadline: date ? date.toISOString() : null })}
                                                 showTimeSelect
+                                                locale={settings.language === 'ja' ? 'ja' : undefined}
                                                 timeFormat="HH:mm"
                                                 dateFormat="MMM d, h:mm aa"
                                                 portalId="root"
@@ -683,6 +811,39 @@ function App() {
                     {t(settings.language, "version")}
                 </div>
             </div>
+
+            {/* Invoice Settings Modal */}
+
+
+            {/* Invoice Generation Modal */}
+            {showInvoiceModal && selectedJobForInvoice && settings.invoice && (
+                <InvoiceGenerationModal
+                    job={selectedJobForInvoice}
+                    settings={settings.invoice}
+                    language={settings.language}
+                    onClose={() => {
+                        setShowInvoiceModal(false);
+                        setSelectedJobForInvoice(null);
+                    }}
+                    onGenerated={(invoiceNumber, invoiceDate) => {
+                        const updatedJobs = jobs.map(j =>
+                            j.id === selectedJobForInvoice.id
+                                ? { ...j, invoiceGenerated: true, invoiceNumber, invoiceDate }
+                                : j
+                        );
+                        setJobs(updatedJobs);
+                        setSettings({
+                            ...settings,
+                            invoice: {
+                                ...settings.invoice!,
+                                nextInvoiceNumber: settings.invoice!.nextInvoiceNumber + 1
+                            }
+                        });
+                        setShowInvoiceModal(false);
+                        setSelectedJobForInvoice(null);
+                    }}
+                />
+            )}
         </div>
     );
 }
