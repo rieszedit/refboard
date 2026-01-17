@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getCurrentWebviewWindow, WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { listen, emit } from "@tauri-apps/api/event";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
@@ -92,18 +92,25 @@ function App() {
         emit("language-changed", { language: settings.language });
     }, [settings.language]);
 
+    // Keep settings and jobs in ref for listeners
+    const settingsRef = useRef(settings);
+    const jobsRef = useRef(jobs);
+    useEffect(() => { settingsRef.current = settings; }, [settings]);
+    useEffect(() => { jobsRef.current = jobs; }, [jobs]);
+
     // ウィンドウ間同期
     useEffect(() => {
         let unlistenRequest: (() => void) | undefined;
         let unlistenUpdate: (() => void) | undefined;
+        let unlistenInvoiceGenerated: (() => void) | undefined;
 
         const setupListeners = async () => {
-            // リファレンスボードからのデータリクエスト
+            // リファレンス設定リクエスト
             unlistenRequest = await listen<RequestReferenceDataPayload>("request-reference-data", (event) => {
-                const { jobId } = event.payload;
-                const job = jobs.find((j) => j.id === jobId);
+                const currentJobs = jobsRef.current;
+                const job = currentJobs.find((j) => j.id === event.payload.jobId);
                 if (job) {
-                    emit(`reference-data-${jobId}`, job);
+                    emit(`reference-data-${event.payload.jobId}`, job);
                 }
             });
 
@@ -115,30 +122,28 @@ function App() {
 
             // 請求書ウィンドウからの設定リクエスト
             await listen<{ jobId: string }>("invoice-request-settings", () => {
-                if (settings.invoice) {
-                    emit("invoice-settings-data", { settings: settings.invoice });
+                const currentSettings = settingsRef.current;
+                if (currentSettings.invoice) {
+                    emit("invoice-settings-data", { settings: currentSettings.invoice });
                 }
             });
 
             // 請求書生成完了
-            const unlistenInvoiceGenerated = await listen<{ jobId: string; invoiceNumber: string; invoiceDate: string; nextNumber: number }>("invoice-generated", (event) => {
+            unlistenInvoiceGenerated = await listen<{ jobId: string; invoiceNumber: string; invoiceDate: string; nextNumber: number }>("invoice-generated", (event) => {
                 const { jobId, invoiceNumber, invoiceDate, nextNumber } = event.payload;
                 // Update job with invoice info
                 setJobs((prev) => prev.map((j) =>
                     j.id === jobId ? { ...j, invoiceGenerated: true, invoiceNumber, invoiceDate } : j
                 ));
                 // Update next invoice number
-                if (settings.invoice) {
-                    setSettings((prev) => ({
+                setSettings((prev) => {
+                    if (!prev.invoice) return prev;
+                    return {
                         ...prev,
-                        invoice: { ...prev.invoice!, nextInvoiceNumber: nextNumber }
-                    }));
-                }
+                        invoice: { ...prev.invoice, nextInvoiceNumber: nextNumber }
+                    };
+                });
             });
-
-            return () => {
-                unlistenInvoiceGenerated();
-            };
         };
 
         const setupInvoiceSettingsListeners = async () => {
@@ -158,7 +163,8 @@ function App() {
                     nextInvoiceNumber: 1,
                     hasInvoiceRegistration: false
                 };
-                emit("invoice-settings-data", { settings: settings.invoice || defaultInvoiceSettings });
+                const currentSettings = settingsRef.current;
+                emit("invoice-settings-data", { settings: currentSettings.invoice || defaultInvoiceSettings });
             });
 
             // 請求書設定保存
@@ -173,8 +179,9 @@ function App() {
         return () => {
             if (unlistenRequest) unlistenRequest();
             if (unlistenUpdate) unlistenUpdate();
+            if (unlistenInvoiceGenerated) unlistenInvoiceGenerated();
         };
-    }, [jobs, settings]);
+    }, []);
 
     // 通知チェック
     useEffect(() => {

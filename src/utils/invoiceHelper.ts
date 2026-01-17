@@ -59,8 +59,8 @@ export async function quickGenerateInvoice(
 
     // PDF生成
     const doc = language === 'ja'
-        ? generateJapaneseInvoice(invoiceData, settings)
-        : generateInternationalInvoice(invoiceData, settings);
+        ? await generateJapaneseInvoice(invoiceData, settings)
+        : await generateInternationalInvoice(invoiceData, settings);
 
     // PDF保存
     try {
