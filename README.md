@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # RefBoard
 
 [English](#english) | [日本語](#日本語)
