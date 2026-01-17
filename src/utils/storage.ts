@@ -13,6 +13,27 @@ const DEFAULT_SETTINGS: AppSettings = {
     language: "en",
     notificationHour: 9,
     notificationMinute: 0,
+    invoice: {
+        businessName: "",
+        businessNameEn: "",
+        postalCode: "",
+        address: "",
+        addressEn: "",
+        phone: "",
+        email: "",
+        bankName: "",
+        bankNameEn: "",
+        branchName: "",
+        branchNameEn: "",
+        accountType: "savings",
+        accountNumber: "",
+        accountHolder: "",
+        accountHolderEn: "",
+        hasInvoiceRegistration: false,
+        invoiceRegistrationNumber: "",
+        nextInvoiceNumber: 1001,
+        invoicePrefix: "INV-",
+    },
 };
 
 // データディレクトリを確保

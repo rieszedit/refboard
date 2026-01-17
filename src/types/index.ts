@@ -1,3 +1,5 @@
+import type { InvoiceSettings } from "./invoice";
+
 // リファレンスアイテム
 export interface ReferenceItem {
     id: string;
@@ -23,6 +25,9 @@ export interface Job {
     references: ReferenceItem[];
     createdAt: string;
     updatedAt: string;
+    invoiceGenerated?: boolean;
+    invoiceNumber?: string;
+    invoiceDate?: string;
 }
 
 // アプリ設定
@@ -35,6 +40,7 @@ export interface AppSettings {
     language: "en" | "ja";
     notificationHour: number;    // 通知時刻（時）0-23
     notificationMinute: number;  // 通知時刻（分）0-59
+    invoice?: InvoiceSettings;   // 請求書設定
 }
 
 // 保存データ構造
