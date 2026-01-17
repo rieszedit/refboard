@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RefBoard | Minimalist Reference Manager for Creators</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="background-glow"></div>
+
+    <nav>
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="none" class="logo-icon">
+                <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2" />
+                <path d="M9 9h6M9 13h6M9 17h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            RefBoard
+        </div>
+        <div class="nav-links">
+            <a href="#features" data-i18n="nav_features">Features</a>
+            <a href="https://github.com/rieszedit/refboard" target="_blank">GitHub</a>
+            <button id="lang-toggle" aria-label="Toggle Language">
+                <span class="lang-text">JP</span>
+            </button>
+            <a href="#download" class="download-btn-small" data-i18n="nav_download">Download</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1 data-i18n="hero_title">Space for your inspiration.</h1>
+            <p data-i18n="hero_subtitle">RefBoard is a minimalist reference board for creators. Track deadlines,
+                organize resources, and stay focused.</p>
+
+            <div class="hero-actions">
+                <a href="#download" class="cta-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    <span data-i18n="hero_cta">Download for Windows</span>
+                </a>
+                <span class="version-badge">v1.0.0 (Beta)</span>
+            </div>
+        </div>
+
+        <div class="video-container">
+            <div class="video-wrapper">
+                <iframe src="https://www.youtube.com/embed/S48ivhwS0-c?si=9_vyBGbE3QhE3cUu" title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+        </div>
+    </header>
+
+    <section id="features" class="features">
+        <div class="section-header">
+            <h2 data-i18n="features_title">Designed for focus.</h2>
+            <p data-i18n="features_subtitle">Everything you need, nothing you don't.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="icon">✨</div>
+                <h3 data-i18n="feat_minimal_title">Minimalist Dashboard</h3>
+                <p data-i18n="feat_minimal_desc">Clean luxury aesthetic designed to stay out of your way while you work.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🖼️</div>
+                <h3 data-i18n="feat_canvas_title">Infinite Canvas</h3>
+                <p data-i18n="feat_canvas_desc">Independent reference board with 8-handle resizing and aspect ratio
+                    lock.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">📄</div>
+                <h3 data-i18n="feat_invoice_title">Invoice Generation</h3>
+                <p data-i18n="feat_invoice_desc">Create professional PDF invoices compatible with the Qualified Invoice
+                    System.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">💾</div>
+                <h3 data-i18n="feat_autosave_title">Auto-Save</h3>
+                <p data-i18n="feat_autosave_desc">Never lose your settings or reference layouts. Changes are saved
+                    automatically.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🔔</div>
+                <h3 data-i18n="feat_reminder_title">Smart Reminders</h3>
+                <p data-i18n="feat_reminder_desc">Discord and in-app notifications to keep your project deadlines on
+                    track.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="icon">🌏</div>
+                <h3 data-i18n="feat_bilingual_title">Bilingual</h3>
+                <p data-i18n="feat_bilingual_desc">Full support for English and Japanese interfaces from the first
+                    launch.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="download" class="download-section">
+        <h2 data-i18n="cta_title">Start your creative run.</h2>
+        <p data-i18n="cta_subtitle">Simple, professional, and built for your workflow.</p>
+        <a href="https://github.com/rieszedit/refboard/releases/latest" class="cta-button large">
+            <span data-i18n="hero_cta">Download for Windows</span>
+        </a>
+    </section>
+
+    <section id="support" class="support-section">
+        <div class="section-header">
+            <h2 data-i18n="support_title">Support Development</h2>
+            <p data-i18n="support_desc">RefBoard is free and open source. Your support helps keep the project alive.</p>
+        </div>
+        <div class="support-buttons">
+            <a href="https://ko-fi.com/rieszedit" target="_blank" class="support-btn kofi">
+                <span class="btn-icon">☕</span>
+                <span data-i18n="btn_kofi">Buy me a Coffee</span>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="copyright">© 2026 RefBoard. Built with Tauri & React.</div>
+            <div class="footer-links">
+                <a href="https://github.com/rieszedit/refboard" target="_blank">GitHub</a>
+                <a href="https://twitter.com/rieszedit" target="_blank">Twitter</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
