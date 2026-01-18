@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getCurrentWebviewWindow, WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { listen, emit } from '@tauri-apps/api/event';
-import { t, type Language } from './utils/i18n';
-import type { InvoiceSettings } from './types/invoice';
+import { t, type Language } from "./utils/i18n";
+import type { InvoiceSettings, CurrencyCode } from "./types/invoice";
 import './styles/App.css';
 import './styles/ReferenceBoard.css';
 
@@ -130,7 +130,7 @@ export function InvoiceSettingsWindow({ theme: initialTheme, language: initialLa
     const isJapanese = language === 'ja';
 
     return (
-        <div className={`app ${theme === 'dark' ? 'dark-theme' : 'light-theme'}`} style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)' }}>
+        <div className={`app ${theme === 'dark' ? 'dark-theme' : 'light-theme'} `} style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg-primary)' }}>
             {/* Title Bar */}
             <div
                 className="custom-titlebar"
@@ -154,7 +154,7 @@ export function InvoiceSettingsWindow({ theme: initialTheme, language: initialLa
 
                 <div className="titlebar-controls" style={{ display: 'flex', gap: '4px' }}>
                     <button
-                        className={`titlebar-btn pin ${isPinned ? 'active' : ''}`}
+                        className={`titlebar - btn pin ${isPinned ? 'active' : ''} `}
                         onClick={togglePin}
                         title="Always on Top"
                         style={{
@@ -405,6 +405,76 @@ export function InvoiceSettingsWindow({ theme: initialTheme, language: initialLa
                                         style={inputStyle}
                                     />
                                 </div>
+                            </div>
+
+                            <div style={{ marginBottom: '16px' }}>
+                                <label style={labelStyle}>Currency</label>
+                                <select
+                                    value={settings.currency || 'JPY'}
+                                    onChange={(e) => {
+                                        const newCurrency = e.target.value as CurrencyCode;
+                                        let newSettings = { ...settings, currency: newCurrency };
+
+                                        // Apply smart defaults if fields are empty or user wants to reset (simple approach: just update if changing currency)
+                                        // Ideally we only update if they match previous defaults, but for now let's set them based on currency
+                                        if (newCurrency === 'JPY') {
+                                            newSettings.taxLabel = '消費税';
+                                            newSettings.taxRate = 10;
+                                            newSettings.withholdingRate = 10.21;
+                                        } else if (newCurrency === 'USD') {
+                                            newSettings.taxLabel = 'Tax';
+                                            newSettings.taxRate = 0;
+                                            newSettings.withholdingRate = 0;
+                                        } else if (newCurrency === 'EUR' || newCurrency === 'GBP') {
+                                            newSettings.taxLabel = 'VAT';
+                                            newSettings.taxRate = 20;
+                                            newSettings.withholdingRate = 0;
+                                        }
+
+                                        setSettings(newSettings);
+                                    }}
+                                    style={{ ...inputStyle, width: '100%', cursor: 'pointer' }}
+                                >
+                                    <option value="JPY">JPY (¥)</option>
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                </select>
+                            </div>
+
+                            <div style={rowStyle}>
+                                <div>
+                                    <label style={labelStyle}>{t(language, 'taxLabel') || "Tax Label"}</label>
+                                    <input
+                                        type="text"
+                                        value={settings.taxLabel || ''}
+                                        onChange={(e) => setSettings({ ...settings, taxLabel: e.target.value })}
+                                        placeholder={isJapanese ? "消費税" : "Tax/VAT"}
+                                        style={inputStyle}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={labelStyle}>{t(language, 'taxRate') || "Tax Rate (%)"}</label>
+                                    <input
+                                        type="number"
+                                        value={settings.taxRate ?? ''}
+                                        onChange={(e) => setSettings({ ...settings, taxRate: parseFloat(e.target.value) || 0 })}
+                                        placeholder={isJapanese ? "10" : "0"}
+                                        step="0.01"
+                                        style={inputStyle}
+                                    />
+                                </div>
+                            </div>
+                            <div style={{ marginBottom: '16px' }}>
+                                <label style={labelStyle}>{t(language, 'withholdingRate') || "Withholding Rate (%)"}</label>
+                                <input
+                                    type="number"
+                                    value={settings.withholdingRate ?? ''}
+                                    onChange={(e) => setSettings({ ...settings, withholdingRate: parseFloat(e.target.value) || 0 })}
+                                    placeholder={isJapanese ? "10.21" : "0"}
+                                    step="0.01"
+                                    style={inputStyle}
+                                />
                             </div>
                         </div>
 

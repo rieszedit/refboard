@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getCurrentWebviewWindow, WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { listen, emit } from '@tauri-apps/api/event';
 import { t, type Language } from './utils/i18n';
-import { generateJapaneseInvoice, generateInternationalInvoice, calculateInvoiceTotal } from './utils/invoiceGenerator';
+import { generateJapaneseInvoice, generateInternationalInvoice, calculateInvoiceTotal, getCurrencySymbol, formatAmount } from './utils/invoiceGenerator';
 import type { InvoiceData, InvoiceLanguage, InvoiceSettings } from './types/invoice';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { save } from '@tauri-apps/plugin-dialog';
@@ -63,7 +63,9 @@ export function InvoiceWindow({ jobId, jobTitle, theme: initialTheme, language: 
     const { taxAmount, withholdingAmount, totalAmount } = calculateInvoiceTotal(
         amountNum,
         includeTax,
-        includeWithholding
+        includeWithholding,
+        settings?.taxRate ?? 10,
+        settings?.withholdingRate ?? 10.21
     );
 
     // Listen for settings from main window
@@ -292,13 +294,13 @@ export function InvoiceWindow({ jobId, jobTitle, theme: initialTheme, language: 
                         <div style={{ marginBottom: '16px' }}>
                             <label style={labelStyle}>{t(language, 'amount')}</label>
                             <div style={{ position: 'relative' }}>
-                                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-sub)' }}>¥</span>
+                                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-sub)' }}>{getCurrencySymbol(settings?.currency)}</span>
                                 <input
                                     type="text"
                                     value={amount}
                                     onChange={(e) => {
                                         const val = e.target.value.replace(/[^\d]/g, '');
-                                        setAmount(val ? parseInt(val, 10).toLocaleString() : '');
+                                        setAmount(val ? formatAmount(parseInt(val, 10), settings?.currency) : '');
                                     }}
                                     placeholder="130,000"
                                     style={{ ...inputStyle, paddingLeft: '28px' }}
@@ -331,11 +333,11 @@ export function InvoiceWindow({ jobId, jobTitle, theme: initialTheme, language: 
                         <div style={{ display: 'flex', gap: '20px', marginBottom: '16px', padding: '12px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid var(--border)' }}>
                             <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '13px', gap: '8px' }}>
                                 <input type="checkbox" checked={includeTax} onChange={(e) => setIncludeTax(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: 'var(--accent)' }} />
-                                {t(language, 'includeTax')}
+                                {settings?.taxLabel || t(language, 'taxLabel')} ({settings?.taxRate ?? 10}%)
                             </label>
                             <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', fontSize: '13px', gap: '8px' }}>
                                 <input type="checkbox" checked={includeWithholding} onChange={(e) => setIncludeWithholding(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: 'var(--accent)' }} />
-                                {t(language, 'includeWithholding')}
+                                {language === 'ja' ? '源泉徴収' : 'Withholding Tax'} ({settings?.withholdingRate ?? 10.21}%)
                             </label>
                         </div>
 
@@ -353,23 +355,23 @@ export function InvoiceWindow({ jobId, jobTitle, theme: initialTheme, language: 
                             <div style={{ fontSize: '11px', color: 'var(--text-sub)', marginBottom: '12px', textTransform: 'uppercase' }}>{t(language, 'summary')}</div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
                                 <span style={{ color: 'var(--text-sub)' }}>{t(language, 'subtotal')}</span>
-                                <span>¥{amountNum.toLocaleString()}</span>
+                                <span>{getCurrencySymbol(settings?.currency)}{formatAmount(amountNum, settings?.currency)}</span>
                             </div>
                             {includeTax && (
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
-                                    <span style={{ color: 'var(--text-sub)' }}>{t(language, 'taxLabel')}</span>
-                                    <span style={{ color: '#4ade80' }}>+¥{taxAmount.toLocaleString()}</span>
+                                    <span style={{ color: 'var(--text-sub)' }}>{settings?.taxLabel || "Tax"} ({settings?.taxRate ?? 10}%)</span>
+                                    <span style={{ color: '#4ade80' }}>+{getCurrencySymbol(settings?.currency)}{formatAmount(taxAmount, settings?.currency)}</span>
                                 </div>
                             )}
                             {includeWithholding && (
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
-                                    <span style={{ color: 'var(--text-sub)' }}>{t(language, 'withholdingLabel')}</span>
-                                    <span style={{ color: '#f87171' }}>-¥{withholdingAmount.toLocaleString()}</span>
+                                    <span style={{ color: 'var(--text-sub)' }}>Withholding ({settings?.withholdingRate ?? 10.21}%)</span>
+                                    <span style={{ color: '#f87171' }}>-{getCurrencySymbol(settings?.currency)}{formatAmount(withholdingAmount, settings?.currency)}</span>
                                 </div>
                             )}
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border)', fontSize: '16px', fontWeight: 'bold' }}>
                                 <span>{t(language, 'total')}</span>
-                                <span style={{ color: 'var(--accent)' }}>¥{totalAmount.toLocaleString()}</span>
+                                <span style={{ color: 'var(--accent)' }}>{getCurrencySymbol(settings?.currency)}{formatAmount(totalAmount, settings?.currency)}</span>
                             </div>
                         </div>
 
@@ -383,7 +385,7 @@ export function InvoiceWindow({ jobId, jobTitle, theme: initialTheme, language: 
                                 background: amountNum ? 'var(--accent)' : 'var(--bg-secondary)',
                                 border: 'none',
                                 borderRadius: '8px',
-                                color: amountNum ? '#000' : 'var(--text-sub)',
+                                color: amountNum ? '#fff' : 'var(--text-sub)',
                                 cursor: amountNum ? 'pointer' : 'not-allowed',
                                 fontSize: '14px',
                                 fontWeight: 'bold',

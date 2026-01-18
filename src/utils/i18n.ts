@@ -33,7 +33,7 @@ export const translations = {
         notSet: "Not Set",
         todayDelivery: "Delivery Today",
         jobCompletedMessage: "✅ Project \"{title}\" has been completed!",
-        version: "RefBoard v0.1.0",
+        version: "RefBoard v{v}",
         helpUndoRedo: "Undo/Redo: Ctrl+Z/Y",
         helpCopyPaste: "Copy/Paste: Ctrl+C/V",
         helpPan: "Pan: Middle Click / Shift+Drag",
@@ -88,13 +88,17 @@ export const translations = {
         save: "Save",
         summary: "Summary",
         subtotal: "Subtotal",
-        taxLabel: "Tax (10%)",
-        withholdingLabel: "Withholding (10.21%)",
+        // taxLabel and withholdingLabel removed, dynamic values used now
         total: "Total",
         generating: "Generating...",
         phone: "Phone",
         bankInfo: "Banking Information",
-        invoiceDefaults: "Invoice Defaults"
+        invoiceDefaults: "Invoice Defaults",
+        taxLabel: "Tax Label",
+        taxRate: "Tax Rate (%)",
+        withholdingRate: "Withholding Rate (%)",
+        support: "Support Dev",
+        donateText: "Buy me a coffee"
     },
     ja: {
         welcome: "RefBoard へようこそ",
@@ -130,7 +134,7 @@ export const translations = {
         notSet: "未設定",
         todayDelivery: "本日納品",
         jobCompletedMessage: "✅ 案件「{title}」が完了しました！",
-        version: "RefBoard v0.1.0",
+        version: "RefBoard v{v}",
         helpUndoRedo: "元に戻す/やり直し: Ctrl+Z/Y",
         helpCopyPaste: "コピー/貼り付け: Ctrl+C/V",
         helpPan: "パン: 中クリック / Shift+ドラッグ",
@@ -185,13 +189,17 @@ export const translations = {
         save: "保存",
         summary: "計算結果",
         subtotal: "小計",
-        taxLabel: "消費税 (10%)",
-        withholdingLabel: "源泉徴収 (10.21%)",
+        // taxLabel removed
         total: "合計",
         generating: "生成中...",
         phone: "電話番号",
         bankInfo: "振込先情報",
-        invoiceDefaults: "請求書設定"
+        invoiceDefaults: "請求書設定",
+        taxLabel: "税ラベル",
+        taxRate: "税率 (%)",
+        withholdingRate: "源泉徴収税率 (%)",
+        support: "開発を支援",
+        donateText: "開発者にコーヒーを奢る"
     }
 };
 

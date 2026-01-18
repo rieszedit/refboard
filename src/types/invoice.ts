@@ -21,11 +21,18 @@ export interface InvoiceSettings {
     // Tax Settings
     hasInvoiceRegistration: boolean; // インボイス登録
     invoiceRegistrationNumber?: string; // T + 13桁
+    taxLabel?: string; // e.g. "Tax", "VAT", "消費税"
+    taxRate?: number; // e.g. 10, 20
+    withholdingRate?: number; // e.g. 10.21
 
     // Invoice Defaults
     nextInvoiceNumber: number;
     invoicePrefix: string; // e.g., "INV-"
+    currency?: CurrencyCode;
 }
+
+export type CurrencyCode = 'JPY' | 'USD' | 'EUR' | 'GBP';
+
 
 export interface InvoiceData {
     invoiceNumber: string;

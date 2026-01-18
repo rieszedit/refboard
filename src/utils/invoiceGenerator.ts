@@ -8,19 +8,21 @@ import type { InvoiceData, InvoiceSettings } from '../types/invoice';
 export function calculateInvoiceTotal(
     amount: number,
     includeTax: boolean,
-    includeWithholding: boolean
+    includeWithholding: boolean,
+    taxRate: number = 10,
+    withholdingRate: number = 10.21
 ): { taxAmount: number; withholdingAmount: number; totalAmount: number } {
     let taxAmount = 0;
     let withholdingAmount = 0;
     let totalAmount = amount;
 
     if (includeTax) {
-        taxAmount = Math.floor(amount * 0.1);
+        taxAmount = Math.floor(amount * (taxRate / 100));
         totalAmount += taxAmount;
     }
 
     if (includeWithholding) {
-        withholdingAmount = Math.floor(amount * 0.1021);
+        withholdingAmount = Math.floor(amount * (withholdingRate / 100));
         totalAmount -= withholdingAmount;
     }
 
@@ -32,8 +34,23 @@ function formatDateJa(dateStr: string): string {
     return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
 }
 
-function formatAmount(amount: number): string {
-    return amount.toLocaleString('ja-JP');
+export function formatAmount(amount: number, currency?: string): string {
+    let locale = 'ja-JP';
+    switch (currency) {
+        case 'USD': locale = 'en-US'; break;
+        case 'EUR': locale = 'de-DE'; break;
+        case 'GBP': locale = 'en-GB'; break;
+    }
+    return amount.toLocaleString(locale);
+}
+
+export function getCurrencySymbol(code?: string): string {
+    switch (code) {
+        case 'USD': return '$';
+        case 'EUR': return '€';
+        case 'GBP': return '£';
+        default: return '¥';
+    }
 }
 
 /**
@@ -41,6 +58,7 @@ function formatAmount(amount: number): string {
  */
 function generateJapaneseInvoiceHTML(data: InvoiceData, settings: InvoiceSettings): string {
     const accountTypeJa = settings.accountType === 'savings' ? '普通' : '当座';
+    const symbol = getCurrencySymbol(settings.currency);
 
     return `
     <div style="
@@ -78,7 +96,7 @@ function generateJapaneseInvoiceHTML(data: InvoiceData, settings: InvoiceSetting
             display: inline-block;
         ">
             <span style="font-size: 14px;">合計金額　</span>
-            <span style="font-size: 24px; font-weight: bold;">¥${formatAmount(data.totalAmount)}-</span>
+            <span style="font-size: 24px; font-weight: bold;">${symbol}${formatAmount(data.totalAmount, settings.currency)}-</span>
             <span style="font-size: 12px;">（税込）</span>
         </div>
         
@@ -127,8 +145,8 @@ function generateJapaneseInvoiceHTML(data: InvoiceData, settings: InvoiceSetting
                     <td style="padding: 10px;">${data.subject}</td>
                     <td style="padding: 10px; text-align: center;">1</td>
                     <td style="padding: 10px; text-align: center;">式</td>
-                    <td style="padding: 10px; text-align: right;">¥${formatAmount(data.amount)}</td>
-                    <td style="padding: 10px; text-align: right;">¥${formatAmount(data.amount)}</td>
+                    <td style="padding: 10px; text-align: right;">${symbol}${formatAmount(data.amount, settings.currency)}</td>
+                    <td style="padding: 10px; text-align: right;">${symbol}${formatAmount(data.amount, settings.currency)}</td>
                 </tr>
             </tbody>
         </table>
@@ -137,23 +155,23 @@ function generateJapaneseInvoiceHTML(data: InvoiceData, settings: InvoiceSetting
         <div style="text-align: right; font-size: 13px;">
             <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
                 <span style="width: 120px;">小計</span>
-                <span style="width: 120px; text-align: right;">¥${formatAmount(data.amount)}</span>
+                <span style="width: 120px; text-align: right;">${symbol}${formatAmount(data.amount, settings.currency)}</span>
             </div>
             ${data.includeTax ? `
                 <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
-                    <span style="width: 120px;">消費税 (10%)</span>
-                    <span style="width: 120px; text-align: right;">¥${formatAmount(data.taxAmount || 0)}</span>
+                    <span style="width: 120px;">${settings.taxLabel || '消費税'} (${settings.taxRate || 10}%)</span>
+                    <span style="width: 120px; text-align: right;">${symbol}${formatAmount(data.taxAmount || 0, settings.currency)}</span>
                 </div>
             ` : ''}
             ${data.includeWithholding ? `
                 <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
-                    <span style="width: 120px;">源泉徴収 (10.21%)</span>
-                    <span style="width: 120px; text-align: right;">-¥${formatAmount(data.withholdingAmount || 0)}</span>
+                    <span style="width: 120px;">源泉徴収 (${settings.withholdingRate || 10.21}%)</span>
+                    <span style="width: 120px; text-align: right;">-${symbol}${formatAmount(data.withholdingAmount || 0, settings.currency)}</span>
                 </div>
             ` : ''}
             <div style="display: flex; justify-content: flex-end; margin-top: 10px; padding-top: 10px; border-top: 2px solid #333; font-weight: bold; font-size: 16px;">
                 <span style="width: 120px;">合計</span>
-                <span style="width: 120px; text-align: right;">¥${formatAmount(data.totalAmount)}</span>
+                <span style="width: 120px; text-align: right;">${symbol}${formatAmount(data.totalAmount, settings.currency)}</span>
             </div>
         </div>
     </div>
@@ -171,6 +189,7 @@ function generateInternationalInvoiceHTML(data: InvoiceData, settings: InvoiceSe
     };
 
     const accountTypeEn = settings.accountType === 'savings' ? 'Savings' : 'Checking';
+    const symbol = getCurrencySymbol(settings.currency);
 
     return `
     <div style="
@@ -222,8 +241,8 @@ function generateInternationalInvoiceHTML(data: InvoiceData, settings: InvoiceSe
                 <tr style="border-bottom: 1px solid #ddd;">
                     <td style="padding: 10px;">${data.subject}</td>
                     <td style="padding: 10px; text-align: center;">1</td>
-                    <td style="padding: 10px; text-align: right;">¥${formatAmount(data.amount)}</td>
-                    <td style="padding: 10px; text-align: right;">¥${formatAmount(data.amount)}</td>
+                    <td style="padding: 10px; text-align: right;">${symbol}${formatAmount(data.amount, settings.currency)}</td>
+                    <td style="padding: 10px; text-align: right;">${symbol}${formatAmount(data.amount, settings.currency)}</td>
                 </tr>
             </tbody>
         </table>
@@ -232,23 +251,23 @@ function generateInternationalInvoiceHTML(data: InvoiceData, settings: InvoiceSe
         <div style="text-align: right; font-size: 13px;">
             <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
                 <span style="width: 150px;">Subtotal</span>
-                <span style="width: 120px; text-align: right;">¥${formatAmount(data.amount)}</span>
+                <span style="width: 120px; text-align: right;">${symbol}${formatAmount(data.amount, settings.currency)}</span>
             </div>
             ${data.includeTax ? `
                 <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
-                    <span style="width: 150px;">Tax (10%)</span>
-                    <span style="width: 120px; text-align: right;">¥${formatAmount(data.taxAmount || 0)}</span>
+                    <span style="width: 150px;">${settings.taxLabel || 'Tax'} (${settings.taxRate || 0}%)</span>
+                    <span style="width: 120px; text-align: right;">${symbol}${formatAmount(data.taxAmount || 0, settings.currency)}</span>
                 </div>
             ` : ''}
             ${data.includeWithholding ? `
                 <div style="display: flex; justify-content: flex-end; margin-bottom: 5px;">
-                    <span style="width: 150px;">Withholding (10.21%)</span>
-                    <span style="width: 120px; text-align: right;">-¥${formatAmount(data.withholdingAmount || 0)}</span>
+                    <span style="width: 150px;">Withholding (${settings.withholdingRate || 0}%)</span>
+                    <span style="width: 120px; text-align: right;">-${symbol}${formatAmount(data.withholdingAmount || 0, settings.currency)}</span>
                 </div>
             ` : ''}
             <div style="display: flex; justify-content: flex-end; margin-top: 10px; padding-top: 10px; border-top: 2px solid #333; font-weight: bold; font-size: 16px;">
                 <span style="width: 150px;">Total</span>
-                <span style="width: 120px; text-align: right;">¥${formatAmount(data.totalAmount)}</span>
+                <span style="width: 120px; text-align: right;">${symbol}${formatAmount(data.totalAmount, settings.currency)}</span>
             </div>
         </div>
         

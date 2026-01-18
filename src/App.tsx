@@ -4,6 +4,7 @@ import { listen, emit } from "@tauri-apps/api/event";
 import { isPermissionGranted, requestPermission, sendNotification } from "@tauri-apps/plugin-notification";
 import { openPath } from "@tauri-apps/plugin-opener";
 import { open as openDialog, ask } from "@tauri-apps/plugin-dialog";
+import { getVersion } from "@tauri-apps/api/app";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./styles/App.css";
@@ -38,6 +39,7 @@ function App() {
 
     // 新規案件入力
     const [newJobTitle, setNewJobTitle] = useState("");
+    const [appVersion, setAppVersion] = useState("");
 
     const appWindow = getCurrentWebviewWindow();
     const { sendToDiscord } = useDiscord(settings.webhookUrl);
@@ -65,6 +67,7 @@ function App() {
     // 初期化
     useEffect(() => {
         loadData();
+        getVersion().then(setAppVersion);
 
         // 無駄なコンテキストメニューを無効化
         const handleContextMenu = (e: MouseEvent) => {
@@ -358,19 +361,29 @@ function App() {
             const selected = await openDialog({
                 multiple: false,
                 directory: false,
-                filters: [
-                    {
-                        name: "Project Files",
-                        extensions: ["aep", "prproj", "aup", "aup2", "psd", "ai", "txt", "docx", "xlsx", "mp4"],
-                    },
-                ],
+                // filters削除で全ファイル許可
             });
 
             if (selected && typeof selected === "string") {
-                updateJob(id, { filePath: selected });
+                updateJob(id, { filePath: selected, isFolder: false });
             }
         } catch (e) {
             console.error("File selection failed:", e);
+        }
+    };
+
+    const attachFolder = async (id: string) => {
+        try {
+            const selected = await openDialog({
+                multiple: false,
+                directory: true,
+            });
+
+            if (selected && typeof selected === "string") {
+                updateJob(id, { filePath: selected, isFolder: true });
+            }
+        } catch (e) {
+            console.error("Folder selection failed:", e);
         }
     };
 
@@ -380,6 +393,18 @@ function App() {
         } catch (e) {
             console.error("Failed to open file:", e);
             alert(t(settings.language, "failedToOpenFile") + e);
+        }
+    };
+
+    const handleOpenParentFolder = async (path: string) => {
+        try {
+            // 簡易的な親ディレクトリ取得 (Windows/Mac両対応)
+            const parent = path.substring(0, Math.max(path.lastIndexOf('\\'), path.lastIndexOf('/')));
+            if (parent) {
+                await openPath(parent);
+            }
+        } catch (e) {
+            console.error("Failed to open parent folder:", e);
         }
     };
 
@@ -431,8 +456,16 @@ function App() {
         if (lower.endsWith(".aup") || lower.endsWith(".aup2")) return "🎞️";
         if (lower.endsWith(".psd")) return "🔵";
         if (lower.endsWith(".ai")) return "🟠";
-        if (lower.endsWith(".mp4") || lower.endsWith(".mov")) return "🎬";
-        return "📄";
+        if (lower.endsWith(".mp4") || lower.endsWith(".mov") || lower.endsWith(".avi") || lower.endsWith(".mkv")) return "🎬";
+        if (lower.endsWith(".mp3") || lower.endsWith(".wav")) return "🎵";
+        if (lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".svg") || lower.endsWith(".gif")) return "🖼️";
+        if (lower.endsWith(".pdf")) return "📕";
+        if (lower.endsWith(".zip") || lower.endsWith(".rar") || lower.endsWith(".7z")) return "📦";
+        if (lower.endsWith(".exe") || lower.endsWith(".msi") || lower.endsWith(".bat")) return "⚙️";
+        if (lower.endsWith(".txt") || lower.endsWith(".md") || lower.endsWith(".json")) return "📝";
+        if (lower.endsWith(".xls") || lower.endsWith(".xlsx") || lower.endsWith(".csv")) return "📊";
+        if (lower.endsWith(".doc") || lower.endsWith(".docx")) return "📄";
+        return "📁";
     };
 
     // ウィンドウ操作
@@ -633,6 +666,29 @@ function App() {
                         <button className="btn-close-settings" onClick={() => setShowSettings(false)}>
                             {t(settings.language, "done")}
                         </button>
+
+                        <div style={{ marginTop: '20px', borderTop: '1px solid var(--border)', paddingTop: '20px', textAlign: 'center' }}>
+                            <a
+                                href="https://ko-fi.com/rieszedit"
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={(e) => { e.preventDefault(); openPath("https://ko-fi.com/rieszedit"); }}
+                                style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    color: 'var(--text-primary)',
+                                    textDecoration: 'none',
+                                    padding: '8px 16px',
+                                    background: 'var(--bg-secondary)',
+                                    borderRadius: '20px',
+                                    fontSize: '13px'
+                                }}
+                            >
+                                <span>☕</span>
+                                {t(settings.language, "donateText")}
+                            </a>
+                        </div>
                     </div>
                 </div>
             )}
@@ -750,13 +806,18 @@ function App() {
                                         </div>
                                         <div className="job-meta">
                                             {job.filePath ? (
-                                                <div className="file-badge" onClick={() => attachFile(job.id)} title="Click to change file">
-                                                    <span>{getFileIcon(job.filePath)}</span>
+                                                <div className="file-badge" onClick={() => job.isFolder ? attachFolder(job.id) : attachFile(job.id)} title="Click to change">
+                                                    <span>{job.isFolder ? "📂" : getFileIcon(job.filePath)}</span>
                                                     {job.filePath.split(/[\\/]/).pop()}
                                                 </div>
                                             ) : (
-                                                <div className="file-placeholder" onClick={() => attachFile(job.id)}>
-                                                    📎 {t(settings.language, "noFile")}
+                                                <div style={{ display: 'flex', gap: '4px' }}>
+                                                    <div className="file-placeholder" onClick={() => attachFile(job.id)} title="Attach File">
+                                                        📎 {t(settings.language, "noFile")}
+                                                    </div>
+                                                    <div className="file-placeholder" onClick={() => attachFolder(job.id)} title="Attach Folder" style={{ padding: '0 8px' }}>
+                                                        📂
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
@@ -785,9 +846,16 @@ function App() {
 
                                         <div className="action-buttons">
                                             {job.filePath && (
-                                                <button className="icon-btn" onClick={() => handleOpenFile(job.filePath!)} title={t(settings.language, "openProject")}>
-                                                    ▶
-                                                </button>
+                                                <>
+                                                    <button className="icon-btn" onClick={() => handleOpenFile(job.filePath!)} title={job.isFolder ? "Open Folder" : t(settings.language, "openProject")}>
+                                                        {job.isFolder ? "📂" : "▶"}
+                                                    </button>
+                                                    {!job.isFolder && (
+                                                        <button className="icon-btn" onClick={() => handleOpenParentFolder(job.filePath!)} title="Open Parent Folder">
+                                                            📂
+                                                        </button>
+                                                    )}
+                                                </>
                                             )}
                                             <button className="icon-btn delete-btn" onClick={() => deleteJob(job.id)} title={t(settings.language, "delete")}>
                                                 ✕
@@ -814,8 +882,16 @@ function App() {
                 <div>
                     Status: {settings.webhookUrl ? t(settings.language, "connected") : t(settings.language, "localOnly")}
                 </div>
-                <div>
-                    {t(settings.language, "version")}
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <a
+                        href="https://ko-fi.com/rieszedit"
+                        onClick={(e) => { e.preventDefault(); openPath("https://ko-fi.com/rieszedit"); }}
+                        style={{ color: 'var(--text-sub)', textDecoration: 'none', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                        <span>☕</span> {t(settings.language, "support")}
+                    </a>
+                    <span>|</span>
+                    {t(settings.language, "version", { v: appVersion })}
                 </div>
             </div>
 

@@ -284,14 +284,14 @@ export function InvoiceGenerationModal({
 
                     {includeTax && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
-                            <span style={{ color: 'var(--text-sub)' }}>{t(language, 'taxLabel')}</span>
+                            <span style={{ color: 'var(--text-sub)' }}>{settings.taxLabel || "Tax"} ({settings.taxRate ?? 10}%)</span>
                             <span style={{ color: '#4ade80' }}>+¥{taxAmount.toLocaleString()}</span>
                         </div>
                     )}
 
                     {includeWithholding && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '13px' }}>
-                            <span style={{ color: 'var(--text-sub)' }}>{t(language, 'withholdingLabel')}</span>
+                            <span style={{ color: 'var(--text-sub)' }}>Withholding ({settings.withholdingRate ?? 10.21}%)</span>
                             <span style={{ color: '#f87171' }}>-¥{withholdingAmount.toLocaleString()}</span>
                         </div>
                     )}

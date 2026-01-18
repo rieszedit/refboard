@@ -21,6 +21,7 @@ export interface Job {
     deadline: string | null;
     completedRules: string[]; // すでに通知済みのキー（"day-3", "day-0" 等）
     filePath: string | null;
+    isFolder?: boolean;
     isCompleted: boolean;
     references: ReferenceItem[];
     createdAt: string;
