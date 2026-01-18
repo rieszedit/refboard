@@ -5,6 +5,8 @@ import { isPermissionGranted, requestPermission, sendNotification } from "@tauri
 import { openPath } from "@tauri-apps/plugin-opener";
 import { open as openDialog, ask } from "@tauri-apps/plugin-dialog";
 import { getVersion } from "@tauri-apps/api/app";
+import { check } from "@tauri-apps/plugin-updater";
+import { relaunch } from "@tauri-apps/plugin-process";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./styles/App.css";
@@ -67,7 +69,32 @@ function App() {
     // 初期化
     useEffect(() => {
         loadData();
-        getVersion().then(setAppVersion);
+        getVersion().then(v => {
+            console.log("Current App Version:", v);
+            setAppVersion(v);
+        });
+
+        const initUpdater = async () => {
+            try {
+                const update = await check();
+                if (update && update.available) {
+                    console.log("Update available:", update.version);
+                    const yes = await ask(
+                        `RefBoard ${update.version} available!\n\n${update.body || 'New features and improvements.'}\n\nUpdate now?`,
+                        { title: 'Update Available', kind: 'info', okLabel: 'Update', cancelLabel: 'Later' }
+                    );
+                    if (yes) {
+                        await update.downloadAndInstall();
+                        await relaunch();
+                    }
+                } else {
+                    console.log("No update available");
+                }
+            } catch (error) {
+                console.error("Failed to check for updates:", error);
+            }
+        };
+        initUpdater();
 
         // 無駄なコンテキストメニューを無効化
         const handleContextMenu = (e: MouseEvent) => {

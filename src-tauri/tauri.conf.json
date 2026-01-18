@@ -37,6 +37,7 @@
     },
     "bundle": {
         "active": true,
+        "createUpdaterArtifacts": true,
         "targets": [
             "nsis"
         ],
@@ -54,7 +55,7 @@
                 "https://github.com/rieszedit/refboard/releases/latest/download/latest.json"
             ],
             "dialog": true,
-            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc3MUZFMzMzNEFGQjJEOTYKUldSWlBmdEtNK01mZDh5K2RKanlISTZ0LzFTbGN0aVhTOW9oQ0JVcFNVL0tFWHpybjUwOXA0eXEK"
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJCMTBDODFDODNBMEVBQ0EKUldUSzZxQ0RITWdRdTBwdHV6T1VCL0x5Z0pFU0VmdmxRbC9HNXBxWUhKK2tCd2liM3lhb0JvSG8K"
         }
     }
 }
