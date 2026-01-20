@@ -106,6 +106,19 @@ nav {
     border-radius: 6px;
 }
 
+.nav-links .nav-buy-rbd {
+    color: var(--accent);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: rgba(255, 215, 0, 0.05);
+}
+
+.nav-links .nav-buy-rbd:hover {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: var(--accent);
+}
+
 /* Hero Section */
 .hero {
     padding: 160px 20px 80px;
@@ -122,6 +135,7 @@ nav {
     line-height: 1.1;
     background: linear-gradient(to right, #fff, #aaa);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -165,6 +179,18 @@ nav {
     background: var(--glass-bg);
     padding: 4px 12px;
     border-radius: 100px;
+}
+
+.hero-badges {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+}
+
+.orynth-badge img {
+    height: 60px;
+    width: auto;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
 }
 
 /* Video Container */

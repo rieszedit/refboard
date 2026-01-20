@@ -2,6 +2,7 @@ const translations = {
     en: {
         nav_features: "Features",
         nav_download: "Download",
+        nav_buy_rbd: "Buy $RBD",
         hero_title: "Focus on Creation.<br>Let us handle the rest.",
         hero_subtitle: "RefBoard is a minimalist reference board for creators. Track deadlines, organize resources, and simplify your workflow.",
         hero_cta: "Download for Windows",
@@ -29,6 +30,7 @@ const translations = {
     ja: {
         nav_features: "機能",
         nav_download: "ダウンロード",
+        nav_buy_rbd: "$RBDを購入",
         hero_title: "創作に集中しよう。<br>面倒な管理はRefBoardへ。",
         hero_subtitle: "RefBoardはクリエイターのためのミニマリストなリファレンス管理ツールです。納期管理、資料整理、そしてワークフローの効率化を。",
         hero_cta: "Windows版をダウンロード",

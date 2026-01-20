@@ -20,4 +20,3 @@ REM Clean up
 git branch -D gh-pages-temp
 
 echo Done!
-pause
