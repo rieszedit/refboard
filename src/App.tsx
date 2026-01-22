@@ -18,6 +18,7 @@ import { InvoiceGenerationModal } from "./components/InvoiceGenerationModal";
 import type { InvoiceSettings } from "./types/invoice";
 import { registerLocale } from "react-datepicker";
 import { ja } from "date-fns/locale";
+import { initAnalytics, trackEvent } from "./utils/analytics";
 
 registerLocale('ja', ja);
 
@@ -68,11 +69,15 @@ function App() {
 
     // 初期化
     useEffect(() => {
+        initAnalytics();
+        trackEvent('app_launched', { version: '1.1.0' });
         loadData();
         getVersion().then(v => {
             console.log("Current App Version:", v);
             setAppVersion(v);
+            trackEvent('app_ready', { version: v });
         });
+
 
         const initUpdater = async () => {
             try {

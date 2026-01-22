@@ -30,6 +30,14 @@
                     "**"
                 ]
             },
+            "csp": {
+                "default-src": [
+                    "'self'",
+                    "'unsafe-inline'",
+                    "'unsafe-eval'",
+                    "https://us.aptabase.com"
+                ]
+            },
             "capabilities": [
                 "default"
             ]

@@ -12,14 +12,15 @@
         "tauri:build": "tauri build"
     },
     "dependencies": {
+        "@aptabase/web": "^0.5.0",
         "@tauri-apps/api": "^2.2.0",
         "@tauri-apps/plugin-dialog": "^2.0.0",
         "@tauri-apps/plugin-fs": "^2.0.0",
         "@tauri-apps/plugin-http": "^2.0.0",
         "@tauri-apps/plugin-notification": "^2.0.0",
         "@tauri-apps/plugin-opener": "^2.0.0",
-        "@tauri-apps/plugin-updater": "^2.0.0",
         "@tauri-apps/plugin-process": "^2.0.0",
+        "@tauri-apps/plugin-updater": "^2.0.0",
         "html2canvas": "^1.4.1",
         "jspdf": "^4.0.0",
         "react": "^19.0.0",
