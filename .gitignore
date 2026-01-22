@@ -36,3 +36,24 @@ src-tauri/*.key.pub
 # Scripts
 manual_deploy.bat
 quick_push.bat
+
+# Security
+src-tauri/release.key
+*.pem
+*.pfx
+
+# System
+desktop.ini
+Thumbs.db
+
+# Misc
+ui-ref.png
+ui-ref-check_this.png
+deploy_landing.bat
+copy-icons.cjs
+copy-icons.js
+fix-icon-cjs.cjs
+fix-icon.js
+marker.txt
+*.txt
+!README.txt
