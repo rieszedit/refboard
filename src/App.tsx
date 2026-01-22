@@ -70,7 +70,7 @@ function App() {
     // 初期化
     useEffect(() => {
         initAnalytics();
-        trackEvent('app_launched', { version: '1.1.0' });
+        trackEvent('app_launched', { version: '1.1.1' });
         loadData();
         getVersion().then(v => {
             console.log("Current App Version:", v);
