@@ -29,3 +29,10 @@ src-tauri/*.key
 src-tauri/*.key.pub
 *.key
 *.key.pub
+
+# Agent
+.agent/
+
+# Scripts
+manual_deploy.bat
+quick_push.bat

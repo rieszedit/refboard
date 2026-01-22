@@ -3,4 +3,4 @@ REM Helper script to execute commands safely by ignoring trailing garbage (quote
 REM Usage: wrapper.bat "your command here"
 REM Example: wrapper.bat "git status"
 
-%~1
+%~1 & REM
