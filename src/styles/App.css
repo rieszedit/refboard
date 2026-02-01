@@ -1,0 +1,854 @@
+:root {
+    /* BeeRef Minimalist Palette (Dark) */
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #222222;
+    --accent: #e5e5e5;
+    --accent-dim: rgba(255, 255, 255, 0.1);
+    --text-main: #f0f0f0;
+    --text-sub: #a0a0a0;
+    --border: #333333;
+    --danger: #ff4d4d;
+}
+
+[data-theme="light"],
+.light-theme {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f4f4f4;
+    --accent: #111111;
+    --accent-dim: rgba(0, 0, 0, 0.08);
+    --text-main: #111111;
+    --text-sub: #555555;
+    --border: #d0d0d0;
+    --danger: #cc0000;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-main);
+    overflow: hidden;
+}
+
+/* Portaled DatePicker */
+#portal-root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+}
+
+.app-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+}
+
+/* --- Title Bar --- */
+.titlebar {
+    height: 32px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px 0 12px;
+    user-select: none;
+}
+
+.drag-handle {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.app-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--text-main);
+}
+
+.app-subtitle {
+    font-size: 10px;
+    color: var(--text-sub);
+    opacity: 0.7;
+}
+
+.titlebar-controls {
+    display: flex;
+    height: 100%;
+}
+
+.btn,
+.control-btn {
+    width: 38px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    color: var(--text-sub);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.1s;
+}
+
+.btn:hover,
+.control-btn:hover {
+    background: rgba(128, 128, 128, 0.1);
+    color: var(--text-main);
+}
+
+.control-btn.active {
+    color: var(--accent);
+}
+
+.close-btn:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* --- Input Area --- */
+.dashboard-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    overflow: hidden;
+}
+
+.input-area {
+    padding: 12px 24px 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.job-title-input {
+    width: 100%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 8px 12px;
+    border-radius: 4px;
+    outline: none;
+    font-size: 13px;
+    transition: border-color 0.2s;
+    text-align: center;
+    letter-spacing: 0.1em;
+}
+
+.job-title-input:focus {
+    border-color: var(--accent);
+}
+
+/* --- Tabs --- */
+.dashboard-tabs {
+    display: flex;
+    gap: 20px;
+    padding: 0 24px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-sub);
+    padding: 8px 0;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tab-btn span {
+    font-size: 10px;
+    opacity: 0.5;
+    background: rgba(128, 128, 128, 0.1);
+    padding: 1px 6px;
+    border-radius: 10px;
+}
+
+.tab-btn:hover {
+    color: var(--text-main);
+}
+
+.tab-btn.active {
+    color: var(--accent);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--text-main);
+}
+
+/* --- Job List --- */
+.job-list {
+    flex: 1;
+    padding: 0 24px 12px;
+    overflow-y: auto;
+}
+
+.job-card {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+    transition: background 0.2s;
+}
+
+.job-card:hover {
+    background: rgba(128, 128, 128, 0.03);
+}
+
+.job-card.completed {
+    opacity: 0.4;
+}
+
+.job-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    position: relative;
+    background: var(--bg-secondary);
+}
+
+.job-checkbox:hover {
+    border-color: var(--text-main);
+}
+
+.checkbox-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--text-main);
+    border-radius: 2px;
+    animation: check-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.datepicker-input {
+    width: 160px;
+    padding: 10px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-main);
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+}
+
+.board-trigger {
+    width: 44px;
+    height: 44px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-sub);
+    flex-shrink: 0;
+}
+
+.board-trigger:hover {
+    border-color: var(--text-main);
+    color: var(--text-main);
+    background: var(--accent-dim);
+}
+
+.fixed-stamp {
+    position: absolute;
+    top: -24px;
+    left: 6px;
+    font-size: 8px;
+    font-weight: 800;
+    color: var(--text-main);
+    border: 1px solid var(--text-main);
+    padding: 0px 3px;
+    border-radius: 1px;
+    transform: rotate(-10deg);
+    pointer-events: none;
+    letter-spacing: 0.1em;
+    background: var(--bg-primary);
+    opacity: 0.8;
+    animation: stamp-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.5);
+    z-index: 10;
+}
+
+@keyframes check-pop {
+    0% {
+        transform: scale(0);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes stamp-in {
+    0% {
+        transform: rotate(-12deg) scale(2);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotate(-12deg) scale(1);
+        opacity: 1;
+    }
+}
+
+.job-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.job-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.job-meta {
+    display: flex;
+    gap: 8px;
+}
+
+.file-badge,
+.file-placeholder {
+    font-size: 11px;
+    color: var(--text-sub);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.file-badge:hover,
+.file-placeholder:hover {
+    color: var(--text-main);
+}
+
+.job-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.deadline-info {
+    text-align: right;
+}
+
+.deadline-badge {
+    font-size: 12px;
+    color: var(--text-sub);
+    cursor: pointer;
+}
+
+.deadline-time {
+    font-size: 10px;
+    color: var(--text-sub);
+    opacity: 0.6;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.job-card:hover .action-buttons {
+    opacity: 1;
+}
+
+.icon-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    border-color: var(--text-main);
+    color: var(--text-main);
+    background: rgba(128, 128, 128, 0.05);
+}
+
+.delete-btn:hover {
+    background: rgba(255, 77, 77, 0.1);
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.board-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(30, 58, 138, 0.1);
+}
+
+.day-chip {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.day-chip:hover {
+    border-color: var(--text-sub);
+}
+
+.day-chip.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+/* --- Footer --- */
+.footer {
+    height: 24px;
+    padding: 0 24px;
+    font-size: 10px;
+    color: var(--text-sub);
+    opacity: 0.5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+}
+
+/* --- Settings Overlay --- */
+.settings-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5000;
+}
+
+.settings-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    padding: 24px;
+    border-radius: 8px;
+    width: 340px;
+}
+
+.settings-content h3 {
+    font-size: 14px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.webpack-label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-bottom: 8px;
+}
+
+.webhook-input {
+    width: 100%;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    outline: none;
+}
+
+.btn-close-settings {
+    width: 100%;
+    padding: 10px;
+    background: var(--text-main);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    transition: opacity 0.2s;
+}
+
+.btn-close-settings:hover {
+    opacity: 0.9;
+}
+
+/* --- Onboarding --- */
+.onboarding-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 6000;
+}
+
+.onboarding-content {
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.onboarding-content h2 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    margin-bottom: 8px;
+    color: var(--text-main);
+}
+
+.onboarding-content p {
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-bottom: 40px;
+}
+
+/* New unified onboarding options */
+.onboarding-options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 48px;
+}
+
+.option-group {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.option-toggle {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.option-toggle svg {
+    width: 18px;
+    height: 18px;
+}
+
+.option-toggle.text {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.option-toggle:hover {
+    color: var(--text-main);
+    background: var(--accent-dim);
+}
+
+.option-toggle.active {
+    background: var(--text-main);
+    color: var(--bg-primary);
+}
+
+.option-divider {
+    width: 1px;
+    height: 32px;
+    background: var(--border);
+}
+
+/* --- React DatePicker Base Overrides --- */
+.react-datepicker-wrapper {
+    display: block !important;
+}
+
+.react-datepicker__input-container input {
+    display: none;
+}
+
+.react-datepicker__input-container input.datepicker-input {
+    display: block !important;
+}
+
+.react-datepicker {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-main) !important;
+    font-family: inherit !important;
+}
+
+.react-datepicker__header {
+    background-color: var(--bg-primary) !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name,
+.react-datepicker__day {
+    color: var(--text-main) !important;
+}
+
+.react-datepicker__day:hover {
+    background-color: var(--border) !important;
+}
+
+.react-datepicker__day--selected {
+    background-color: var(--accent) !important;
+    color: var(--bg-primary) !important;
+}
+
+.react-datepicker__day--disabled {
+    color: var(--text-sub) !important;
+    opacity: 0.3;
+}
+
+.react-datepicker__time-container {
+    border-left: 1px solid var(--border) !important;
+}
+
+.react-datepicker__time {
+    background: var(--bg-secondary) !important;
+}
+
+.react-datepicker__time-box {
+    color: var(--text-main) !important;
+}
+
+.react-datepicker__time-list-item:hover {
+    background-color: var(--border) !important;
+}
+
+/* --- In-App Alert Popup --- */
+.alert-popup-container {
+    position: fixed;
+    bottom: 60px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 9000;
+    max-width: 340px;
+}
+
+.alert-popup {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 11px;
+    color: var(--text-main);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* --- Toggle Switch --- */
+.toggle-switch-container {
+    display: flex;
+    align-items: center;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border);
+    transition: 0.3s;
+    border-radius: 20px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-sub);
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked+.toggle-slider {
+    background-color: var(--accent);
+}
+
+input:checked+.toggle-slider:before {
+    transform: translateX(20px);
+    background-color: var(--bg-primary);
+}
+
+/* --- Language Dropdown --- */
+.language-dropdown {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 12px;
+    background: var(--bg-secondary);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.language-dropdown:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.language-dropdown option {
+    background: var(--bg-primary);
+    color: var(--text-main);
+}
+
+/* --- Day Chips --- */
+.day-chip {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.day-chip:hover {
+    border-color: var(--accent);
+    color: var(--text-main);
+}
+
+.day-chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-primary);
+    font-weight: 600;
+}
+
+/* --- React DatePicker Customizations --- */
+.react-datepicker-popper {
+    z-index: 10001 !important;
+}
+
+/* Shift DatePicker left if it would overflow */
+.react-datepicker-popper[data-placement^="bottom"] {
+    margin-top: 10px !important;
+}
+
+.react-datepicker__time-list-item {
+    color: var(--text-main) !important;
+    background: transparent !important;
+}
+
+.react-datepicker__time-list-item--selected {
+    background-color: var(--accent) !important;
+    color: var(--bg-primary) !important;
+}
+
+.react-datepicker__time-list-item:hover {
+    background-color: var(--accent-dim) !important;
+}
+
+/* Ensure time list is readable in dark theme */
+/* Ensure time list is readable in dark theme */
+[data-theme="dark"] .react-datepicker__time-list-item,
+.dark-theme .react-datepicker__time-list-item {
+    color: #f0f0f0 !important;
+}
+
+[data-theme="dark"] .react-datepicker__time-list-item--selected,
+.dark-theme .react-datepicker__time-list-item--selected {
+    color: #1a1a1a !important;
+}

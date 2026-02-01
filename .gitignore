@@ -1,0 +1,59 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Tauri
+src-tauri/target
+src-tauri/*.key
+src-tauri/*.key.pub
+*.key
+*.key.pub
+
+# Agent
+.agent/
+
+# Scripts
+manual_deploy.bat
+quick_push.bat
+
+# Security
+src-tauri/release.key
+*.pem
+*.pfx
+
+# System
+desktop.ini
+Thumbs.db
+
+# Misc
+ui-ref.png
+ui-ref-check_this.png
+deploy_landing.bat
+copy-icons.cjs
+copy-icons.js
+fix-icon-cjs.cjs
+fix-icon.js
+marker.txt
+*.txt
+!README.txt

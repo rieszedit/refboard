@@ -1,0 +1,11 @@
+{
+    "version": "1.1.0",
+    "notes": "RefBoard v1.1.0: Tax settings, Folder support, Auto-update.",
+    "pub_date": "2026-01-18T15:50:00Z",
+    "platforms": {
+        "windows-x86_64": {
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVUSzZxQ0RITWdRdTIwZ2ZLSEtyV1BFbTZBUXNsUXA0VHV2YWxDa0lwbWFnQnVic0ZCU3lLRHRJLzgzcWZwZnNoYkFzaVh2UWpBcHhCMFZvR1FMenppOEZXUEdWUnVBNHc0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzY4NzE5MDkzCWZpbGU6UmVmQm9hcmRfMS4xLjBfeDY0LXNldHVwLmV4ZQpMN25qbC9nTmpvT1N1Z3ozclAwUWl3OUltWDN0Q3dZU3Z4RVE1a2hmRytSVDViOVI0bURScHBPbzNiNTcvUlFsUG1CYk1aZ3hFZUNQcWZHM3YzZmpCdz09Cg==",
+            "url": "https://github.com/rieszedit/refboard/releases/latest/download/RefBoard_1.1.0_x64-setup.exe"
+        }
+    }
+}

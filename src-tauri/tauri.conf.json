@@ -1,0 +1,69 @@
+{
+    "$schema": "https://schema.tauri.app/config/2.0.0",
+    "productName": "RefBoard",
+    "version": "1.1.1",
+    "identifier": "com.refboard.desktop",
+    "build": {
+        "beforeDevCommand": "npm run dev -- --port 1421",
+        "devUrl": "http://localhost:1421",
+        "beforeBuildCommand": "npm run build",
+        "frontendDist": "../dist"
+    },
+    "app": {
+        "windows": [
+            {
+                "title": "RefBoard",
+                "label": "main",
+                "width": 900,
+                "height": 700,
+                "minWidth": 600,
+                "minHeight": 400,
+                "decorations": false,
+                "transparent": false,
+                "dragDropEnabled": false
+            }
+        ],
+        "security": {
+            "assetProtocol": {
+                "enable": true,
+                "scope": [
+                    "**"
+                ]
+            },
+            "csp": {
+                "default-src": [
+                    "'self'",
+                    "'unsafe-inline'",
+                    "'unsafe-eval'",
+                    "https://us.aptabase.com"
+                ]
+            },
+            "capabilities": [
+                "default"
+            ]
+        }
+    },
+    "bundle": {
+        "active": true,
+        "createUpdaterArtifacts": true,
+        "targets": [
+            "nsis"
+        ],
+        "icon": [
+            "icons/32x32.png",
+            "icons/128x128.png",
+            "icons/128x128@2x.png",
+            "icons/icon.icns",
+            "icons/icon.ico"
+        ]
+    },
+    "plugins": {
+        "updater": {
+            "endpoints": [
+                "https://github.com/rieszedit/refboard/releases/latest/download/latest.json"
+            ],
+            "dialog": true,
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJCMTBDODFDODNBMEVBQ0EKUldUSzZxQ0RITWdRdTBwdHV6T1VCL0x5Z0pFU0VmdmxRbC9HNXBxWUhKK2tCd2liM3lhb0JvSG8K"
+        }
+    }
+}
