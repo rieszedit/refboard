@@ -1,6 +1,6 @@
 use axum::{
-    extract::{Path, State},
-    response::{Html, IntoResponse, Response},
+    extract::State,
+    response::Html,
     routing::get,
     Json, Router,
 };
@@ -10,12 +10,12 @@ use serde::Serialize;
 use std::{
     fs,
     net::SocketAddr,
-    path::PathBuf,
-    sync::{Arc, Mutex},
+    sync::Mutex,
 };
 use tauri::{AppHandle, Manager};
 use tokio::net::TcpListener;
-use tower_http::{cors::CorsLayer, services::ServeDir}; // Add tracing if needed
+use tower_http::{cors::CorsLayer, services::ServeDir};
+use base64::Engine;
 
 // Shared state for the Axum server
 #[derive(Clone)]
@@ -106,8 +106,8 @@ pub async fn start_server(
     // Convert QR to Base64
     let mut buffer = std::io::Cursor::new(Vec::new());
     image.write_to(&mut buffer, image::ImageOutputFormat::Png)
-         .map_err(|e| e.to_string())?;
-    let base64_qr = base64::encode(buffer.get_ref());
+         .map_err(|e: image::ImageError| e.to_string())?;
+    let base64_qr = base64::engine::general_purpose::STANDARD.encode(buffer.get_ref());
 
     Ok(ServerInfo {
         ip: ip_str,
