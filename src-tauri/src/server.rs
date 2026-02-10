@@ -109,10 +109,12 @@ pub async fn start_server(
     for y in 0..width {
         for x in 0..width {
             let pixel = qr[(y, x)];
-            let color = if pixel { image::Luma([0u8]) } else { image::Luma([255u8]) };
+            // qr_code::Color enum - Dark = true, Light = false
+            let is_dark = pixel == qr_code::Color::Dark;
+            let color = if is_dark { image::Luma([0u8]) } else { image::Luma([255u8]) };
             for dy in 0..4 {
                 for dx in 0..4 {
-                    image.put_pixel((x as u32 * 4 + dx) as u32, (y as u32 * 4 + dy) as u32, color);
+                    image.put_pixel((x as u32 * 4 + dx), (y as u32 * 4 + dy), color);
                 }
             }
         }
