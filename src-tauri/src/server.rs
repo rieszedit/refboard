@@ -100,8 +100,23 @@ pub async fn start_server(
 
     // Generate QR Code
     let url = format!("http://{}:{}", ip_str, port);
-    let code = QrCode::new(url.as_bytes()).map_err(|e| e.to_string())?;
-    let image = code.render::<image::Luma<u8>>().build();
+    let qr = QrCode::new(&url).map_err(|e| e.to_string())?;
+    
+    // Create QR image
+    let width = qr.width();
+    let mut image = image::GrayImage::new(width as u32 * 4, width as u32 * 4);
+    
+    for y in 0..width {
+        for x in 0..width {
+            let pixel = qr[(y, x)];
+            let color = if pixel { image::Luma([0u8]) } else { image::Luma([255u8]) };
+            for dy in 0..4 {
+                for dx in 0..4 {
+                    image.put_pixel((x as u32 * 4 + dx) as u32, (y as u32 * 4 + dy) as u32, color);
+                }
+            }
+        }
+    }
     
     // Convert QR to Base64
     let mut buffer = std::io::Cursor::new(Vec::new());
